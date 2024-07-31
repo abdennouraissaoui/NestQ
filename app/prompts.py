@@ -37,23 +37,24 @@ class Client(BaseModel):
 
 
 class Holding(BaseModel):
-    quantity: Optional[float] = Field(description="Quantity of the investment.")
     symbol: Optional[str] = Field(description="Symbol or ticker of the investment")
+    description: str = Field(description="Description or name of the investment")
     cusip: Optional[str] = Field(description="CUSIP of the investment")
+    quantity: Optional[float] = Field(description="Quantity of the investment.")
     book_value: Optional[float] = Field(description="Book value or cost basis of the investment")
     cost_per_share: Optional[float] = Field(description="Cost per share of the investment")
     market_value: float = Field(description="Market value of the investment")
     current_price: Optional[float] = Field(description="Current price of the investment")
-    description: str = Field(description="Description or name of the investment")
     currency: str = Field(description="Currency of the holding")
 
 
 class Account(BaseModel):
+    account_id: Optional[str] = Field(description="ID of the account")
+    account_type: AccountType = Field(description="Type of the account")
+    account_value: Optional[float] = Field(description="Total value of the account")
+    cash_balance: Optional[float] = Field(description="Cash balance in the account")
     statement_start_date: Optional[str] = Field(description="Statement start date for the account")
     statement_end_date: Optional[str] = Field(description="Statement end date for the account")
-    account_type: AccountType = Field(description="Type of the account")
-    account_id: Optional[str] = Field(description="ID of the account")
-    account_value: Optional[float] = Field(description="Total value of the account")
     management_fee_amount: Optional[float] = Field(description="Management fee amount for the account")
     holdings: List[Holding] = Field(description="List of holdings in the account")
 
@@ -79,7 +80,8 @@ INVESTMENT_STATEMENT_DATA_EXTRACTION = {
     
     You will ensure that the extracted data is accurate. If any information is missing from the statement, represent it as an empty string or zero, as appropriate for the data type.
 
-    The cash balance(s) in the account must be included with the other holdings. For cash, you only need to report the amount (market value) and the currency.""",
+    Note: The sum of the account holdings' market value and cash balance must equal the account value.
+    """,
     'user': 'STATEMENT TEXT: \"\"\"{statement_text}\"\"\"'
 }
 
