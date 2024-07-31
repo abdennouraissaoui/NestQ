@@ -20,7 +20,10 @@ def get_structured_data(context):
 
 
 if __name__ == '__main__':
+    import time
     sample_statements = load_sample_statements_ocr()
-    sample_statement = sample_statements[list(sample_statements.keys())[0]]
+    sample_statement = sample_statements['nbin.pdf']
+    parse_start_time = time.time()
     structured_data = get_structured_data(sample_statement.content)
+    print(f"Selected item parsed in {time.time() - parse_start_time:.2f} seconds")
     print(structured_data)
