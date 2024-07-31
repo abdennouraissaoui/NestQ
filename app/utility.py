@@ -3,12 +3,11 @@ import os
 import configparser
 import base64
 import pickle
-from urllib.parse import urlparse
+import pyperclip
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 import pandas as pd
 from openai import AzureOpenAI
-# from outlines import models
 
 
 def dict_to_json_clipboard(dictionary):
@@ -17,19 +16,11 @@ def dict_to_json_clipboard(dictionary):
     print("JSON data copied to clipboard!")
 
 
-# Function to get a sample of up to 3 PDF files from a folder
-def sample_pdfs(folder_path):
-    pdf_files = [f for f in os.listdir(folder_path) if f.endswith('.pdf')]
-    return random.sample(pdf_files, min(3, len(pdf_files)))
-
-
 def dataframes_to_string(dataframes, max_rows=7):
     combined_string = ""
-
     for df in dataframes:
         combined_string += df.head(max_rows).to_string(index=False)
         combined_string += "\n\n"  # Add some spacing between DataFrames
-
     return combined_string
 
 
@@ -48,25 +39,15 @@ def get_client(client_type: str):
         return DocumentIntelligenceClient(endpoint=endpoint, credential=AzureKeyCredential(api_key))
 
 
-def is_file_or_url(input_string):
-    if os.path.isfile(input_string):
-        return 'file'
-    elif urlparse(input_string).scheme in ['http', 'https']:
-        return 'url'
-    else:
-        return 'unknown'
-
-
 def load_file_as_base64(file_path):
     with open(file_path, "rb") as f:
         data = f.read()
-
     base64_bytes = base64.b64encode(data)
     base64_string = base64_bytes.decode('utf-8')
     return base64_string
 
 
-def parse_table(table):
+def parse_di_table(table):
     data = []
     for row_idx in range(table.row_count):
         row_data = []
@@ -82,19 +63,19 @@ def parse_table(table):
 
 
 def save_sample_statements_ocr(sample_layouts: dict):
-    with open("sample_statements_ocr.pkl", 'wb') as handle:
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'sample_statements_ocr.pkl')
+    with open(file_path, 'wb') as handle:
         pickle.dump(sample_layouts, handle)
 
 
 def load_sample_statements_ocr() -> dict:
     # check if file exists. If not, return empty dict
-    # if not os.path.isfile("../app/sample_statements_ocr.pkl"):
-    #     return {}
-    with open(r"C:\Users\abden\Desktop\NestQ\app\sample_statements_ocr.pkl", 'rb') as handle:
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, 'sample_statements_ocr.pkl')
+    if not os.path.isfile(file_path):
+        return {}
+    with open(file_path, 'rb') as handle:
         sample_layouts = pickle.load(handle)
     return sample_layouts
 
-
-if __name__ == "__main__":
-    client = client()
-    print(client)
