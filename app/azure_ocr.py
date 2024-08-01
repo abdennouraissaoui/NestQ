@@ -14,7 +14,6 @@ def get_document_analysis(file_base64) -> AnalyzeResult:
         output_content_format=ContentFormat.MARKDOWN
 
     )
-
     try:
         result: AnalyzeResult = poller.result()
     except HttpResponseError as error:
