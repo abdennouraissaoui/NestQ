@@ -1,0 +1,154 @@
+!
+2200 McGill College Ave Suite 350 Montreal QC H3A 3P8
+Investment Portfolio Statement As of January 31, 2021
+DANIEL K. M. CHAN 1375 EASTLAWN DR BURNABY BC V5B 3G9
+| | Last Period: December 31, 2020 | This Period: January 31, 2021 |
+| - | - | - |
+| CAD Registered Retirement Savings Plan (RRSP) | $56,313.58 | $56,214.85 |
+| CAD Spousal Registered Retirement Savings Plan (Spousal RRSP) | $96,471.80 | $96,097.69 |
+| Total (CAD) | $152,785.38 | $152,312.54 |
+## What's New?
+| || Market Value ($) | % |
+| - | - | - | - |
+| A :unselected: Cash and Equivalents || 3,794.31 | 2.5 |
+| B :unselected: | Fixed Income Securities and Fixed Income Funds | 19,904.40 | 13.1 |
+| C :unselected: | Equities and Equity Funds | 101,145.33 | 66.4 |
+| D :selected: | Other Assets | 27,468.50 | 18.0 |
+| | Total | 152,312.54 | 100.0 |
+!
+## About Your Registered Account
+| || First 60 Days Remainder of of Year ($) Year ($) | Year-to-Date ($) |
+| - | - | - | - |
+| Contributions | 0.00 | 0.00 | 0.00 |
+Designated Beneficiary(ies)
+WINNIE CHAN
+| Opening Cash Balance on January 1, 2021 | $ 711.27 ||||
+| | Activities For This Period ||| Year-to-Date |
+| | Deductions ($) | Additions ($) | Net Amount ($) | ($) |
+| - | - | - | - | - |
+| Investments Bought, Sold or Redeemed | 0.00 | 500.00 | 500.00 | 500.00 |
+| Withdrawals or Deposits | 0.00 | 0.00 | 0.00 | 0.00 |
+| Interest | 0.00 | 0.00 | 0.00 | 0.00 |
+| Dividends | 0.00 | 0.00 | 0.00 | 0.00 |
+| Management and Custody Fees | (71.55) | 0.00 | (71.55) | (71.55) |
+| Other | (3.58) | 0.00 | (3.58) | (3.58) |
+| Total | (75.13) | 500.00 | 424.87 | 424.87 |
+| Closing Cash Balance on January 31, 2021 | | | 1,136.14 | |
+| Symbol | Quantity Status | Average Unit Cost ($) | Book Cost ($) | Market Price ($) | Market Value ($) |
+| - | - | - | - | - | - |
+| Cash and Equivalents | | | | | |
+| CASH BALANCE | | | 1,136.14 | | 1,136.14 |
+| Total Cash and Equivalents | | | 1,136.14 | | 1,136.14 |
+!
+Investment Portfolio Statement As of January 31, 2021
+| Symbol | Quantity Status | Average Unit Cost ($) | Book Cost ($) | Market Price ($) | Market Value ($) |
+| - | - | - | - | - | - |
+| Fixed Income Securities and Fixed Income Funds | | | | | |
+| MULTI-ASSET FIXED INCOME, NL Series F FRC030 | 1,018.393 SEG | 10.004 | 10,187.75 | 10.413 | 10,604.53 |
+| Total Fixed Income Securities and Fixed Income Funds | | | 10,187.75 | | 10,604.53 |
+| Equities and Equity Funds | | | | | |
+| MARQUIS INSTITUTIONAL EQUITY PORTFOLIO (F) DYN2894 | 2,252.228 SEG | 9.920 | 22,342.11 | 17.052 | 38,404.99 |
+| Total Equities and Equity Funds | | | 22,342.11 | | 38,404.99 |
+| Other Assets | | | | | |
+| CANOE PREFERRED SHARE PORTFOLIO CLASS, Series FX GOC41831 | 510.488 SEG | 9.976 | 5,092.77 | 11.889 | 6,069.19 |
+| Total Other Assets | | | 5,092.77 | | 6,069.19 |
+| Total Account Value - CAD RRSP | | | 38,758.77 | | 56,214.85 |
+| Settlement Date | Activity | Description | Quantity | Price ($) Net Amount ($) | Balance ($) |
+| - | - | - | - | - | - |
+| | | Opening Balance | | | 711.27 |
+| 20/12/31 | DRIP | CANOE PREFERRED SHARE PORTFOLIO CLASS, Series FX VALUE = 31.73 | 2.746 | 0.00 | 711.27 |
+| 20/12/31 | Adjustment | CANOE PREFERRED SHARE PORTFOLIO CLASS, Series FX | 0.001 | 0.00 | 711.27 |
+| 21/01/14 | Fee | Advisory Fee 12/2020 | | (71.55) | 639.72 |
+| 21/01/14 | GST | GST on Advisory Fee | | (3.58) | 636.14 |
+| 21/01/25 | Sold | MULTI-ASSET FIXED INCOME, NL Series F AS OF JAN 21,2021 SOLICITED | (47.931) | 10.431 500.00 | 1,136.14 |
+| 21/01/25 | DRIP | MULTI-ASSET FIXED INCOME, NL Series F VALUE = 17.69 | 1.696 | 0.00 | 1,136.14 |
+| | | Closing Balance | | | 1,136.14 |
+!
+Investment Portfolio Statement As of January 31, 2021
+CAD Spousal Registered Retirement Savings Plan (Spousal RRSP) 38F018-R | Fee-Based
+## About Your Registered Account
+| || First 60 Days Remainder of of Year ($) Year ($) | Year-to-Date ($) |
+| - | - | - | - |
+| Contributions | 0.00 | 0.00 | 0.00 |
+| Spousal Contributions | 0.00 | 0.00 | 0.00 |
+| Total | 0.00 | 0.00 | 0.00 |
+Designated Beneficiary(ies) WINNIE CHAN
+## Opening Cash Balance on January 1, 2021
+$ 5,261.27
+| | Activities For This Period ||| Year-to-Date |
+| | Deductions ($) | Additions ($) | Net Amount ($) | ($) |
+| - | - | - | - | - |
+| Investments Bought, Sold or Redeemed | (2,500.00) | 0.00 | (2,500.00) | (2,500.00) |
+| Withdrawals or Deposits | 0.00 | 0.00 | 0.00 | 0.00 |
+| Interest | 0.00 | 0.00 | 0.00 | 0.00 |
+| Dividends | 0.00 | 0.00 | 0.00 | 0.00 |
+| Distributions | 0.00 | 25.60 | 25.60 | 25.60 |
+| Management and Custody Fees | (122.57) | 0.00 | (122.57) | (122.57) |
+| Other | (6.13) | 0.00 | (6.13) | (6.13) |
+| Total | (2,628.70) | 25.60 | (2,603.10) | (2,603.10) |
+| Closing Cash Balance on January 31, 2021 | | | 2,658.17 | |
+| Symbol | Quantity Status | Average Unit Cost ($) | Book Cost ($) | Market Price ($) | Market Value ($) |
+| - | - | - | - | - | - |
+| Cash and Equivalents | | | | | |
+| CASH BALANCE | | | 2,658.17 | | 2,658.17 |
+| Total Cash and Equivalents | | | 2,658.17 | | 2,658.17 |
+| Fixed Income Securities and Fixed Income Funds | | | | | |
+| MULTI-ASSET FIXED INCOME, NL Series F FRC030 | 893.102 SEG | 9.931 | 8,869.24 | 10.413 | 9,299.87 |
+| Total Fixed Income Securities and Fixed Income Funds | | | 8,869.24 | | 9,299.87 |
+!
+| Symbol | Quantity Status | Average Unit Cost ($) | Book Cost ($) | Market Price ($) | Market Value ($) |
+| - | - | - | - | - | - |
+| Equities and Equity Funds | | | | | |
+| Antrim Balanced Mortgage Fund Series C Class F ABM103 | 12,013.000 SEG | 1.000 | 12,013.00 | 1.000 | 12,013.00 |
+| BMO COVERED CALL UTIL ETF ZWU | 158 SEG | 11.947 | 1,887.70 | 12.170 | 1,922.86 |
+| CI FIRST ASSET CANADIAN REIT ETF RIT | 192 SEG | 16.048 | 3,081.18 | 16.440 | 3,156.48 |
+| DYNAMIC GLOBAL REAL ESTATE FUND (F) DYN1085 | 271.705 SEG | 12.496 | 3,395.31 | 13.770 | 3,741.38 |
+| EHP FOUNDATION INTERNATIONAL ALTERNATIVE EHF300F FUND CLAS | 655.781 SEG | 10.674 | 7,000.00 | 10.506 | 6,889.64 |
+| MARQUIS INSTITUTIONAL EQUITY PORTFOLIO (F) DYN2894 | 2,053.541 SEG | 11.066 | 22,723.71 | 17.052 | 35,016.98 |
+| Total Equities and Equity Funds | | | 50,100.90 | | 62,740.34 |
+| Other Assets | | | | | |
+| DYNAMIC ALPHA PERFORMANCE II FUND (F) DYN3801 | 721.650 SEG | 9.700 | 7,000.00 | 9.870 | 7,122.69 |
+| DYNAMIC ALTERNATIVE YIELD FUND (F) DYN2226 | 932.293 SEG | 9.105 | 8,488.20 | 8.976 | 8,368.26 |
+| Signature Global Infrastructure Fd F CIG54230 | 617.061 SEG | 8.280 | 5,109.44 | 9.575 | 5,908.36 |
+| Total Other Assets | | | 20,597.64 | | 21,399.31 |
+| Total Account Value - CAD Spousal RRSP | | | 82,225.95 | | 96,097.69 |
+| Settlement Date | Activity | Description | Quantity || Price ($) Net Amount ($) | Balance ($) |
+| - | - | - | - | - | - | - |
+| | | Opening Balance | | | | 5,261.27 |
+| 21/01/05 | Income Dist | BMO COVERED CALL UTIL ETF | 158 | | 12.64 | 5,273.91 |
+| 21/01/07 | DRIP | Antrim Balanced Mortgage Fund Series C Class F VALUE = 179.00 | 179.000 | | 0.00 | 5,273.91 |
+| 21/01/14 | Fee | Advisory Fee 12/2020 | | | (122.57) | 5,151.34 |
+| 21/01/14 | GST | GST on Advisory Fee | | | (6.13) | 5,145.21 |
+| 21/01/22 | DRIP | Signature Global Infrastructure Fd F VALUE = 21.21 | 2.171 | | 0.00 | 5,145.21 |
+| 21/01/25 | DRIP | MULTI-ASSET FIXED INCOME, NL Series F VALUE = 15.51 | 1.487 | | 0.00 | 5,145.21 |
+| 21/01/26 | Bought | MARQUIS INSTITUTIONAL EQUITY PORTFOLIO (F) AS OF JAN 22,2021 SOLICITED | 141.813 | 17.628 | (2,500.00) | 2,645.21 |
+!
+Investment Portfolio Statement As of January 31, 2021
+Activity Details (CAD Spousal RRSP | 38F018-R Cont'd)
+| Settlement Date | Activity | Description | Quantity | Price ($) Net Amount ($) | Balance ($) |
+| - | - | - | - | - | - |
+| 21/01/29 | Income Dist | CI FA CANADIAN REIT ETF | 192 | 12.96 | 2,658.17 |
+| | | Closing Balance | | | 2,658.17 |
+!
+Investment Portfolio Statement As of January 31, 2021
+===
+## Additional Information
+### Portfolio Summary
+The amounts shown in this section are in Canadian dollars.
+The subsection on Investment Mix indicates how the consolidated financial assets you hold are distributed across each of the basic asset classes. Any securities sold short or debit cash positions are excluded from this asset mix calculation.
+#### Detailed Information (by account)
+##### All dates of transactions are settlement dates.
+Purchases and/or dispositions of securities resulting from transactions settled after month-end will be reflected in the following month's Statement.
+## Footnotes
+The following footnotes may be shown in the Asset Details section. Non-determinable market value: This indicates that the market value for a particular security was not determinable. Book cost at market value: This indicates that market value information was used to estimate all or part of the book cost of the security. Deferred sales charge: This indicates that the security was purchased on a deferred sales charge (DSC) basis. Depending on the number of years the security is held, charges may be applied by the issuer when the security is sold. Accrued interest: This indicates, whenever possible, that market values for fixed-income securities include accrued interest. Estimated market value: This indicates, in the case of securities for which there is no active market, that the market value given is our estimate.
+### Abbreviations
+The following is a list of the main abbreviations that may appear on your Statement to identify certain share classes and security descriptions.
+NVS
+RS
+RTS
+Non-voting shares Restricted shares Rights
+RVS Restricted voting shares
+SVS
+WTS
+Subordinate voting shares Warrants
+!

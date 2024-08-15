@@ -1,0 +1,85 @@
+Your Statement ROBERT KRYSA Client Name LRSP/LIRA B723278L
+| | Since last statement Dec 31, 2022 ($) | Since beginning of year Jan 1, 2023 ($) | Since Jan 1, 2016^ |
+| - | - | - | - |
+| Opening market value | 57,234.72 | 57,234.72 | 35,079.73 |
+| Added to your account | 0.00 | 0.00 | +2,092.14 |
+| Withdrawn from your account | 0.00 | 0.00 | 0.00 |
+| Change in value | +1,448.20 | +1,448.20 | +21,511.05 |
+| Market value on Mar 31, 2023 | $58,682.92 | $58,682.92 | $58,682.92 |
+^Your account was opened before January 1, 2016. For the purpose of this report, we have started the
+market value calculations on January 1, 2016.
+!
+The changes in market value of your account to March 31, 2023.
+The performance of your account since January 1, 2023.
+Michael Skinner MBA, FMA, CIM, FCSI, Senior Financial Advisor 910-4875 Michael.Skinner@manulifesecurities.ca
+Melissa Harb, Mutual Funds Advisor Assistant 910-4875 | melissa.harb@manulifesecurities.ca
+!
+Regulated by Mutual Fund Dealers Association of Canada mfda.ca
+Manulife Securities
+===
+| Holdings in Your Name | Quantity | Book Cost\* Total ($) | Market value on Mar 31, 2023 Per Unit ($) Total ($) ||
+| - | - | - | - | - |
+| Investment Funds and Deposit Notes | | | | |
+| CI GLOBAL RESOURCE FUND A -FE | 362.0770 | 6,547.47 | 26.1721 | 9,476.32 |
+| CI GLOBAL EQUITY CORPORATE CLASS A -FE | 1,072.0210 | 17,169.43 | 17.1505 | 18,385.70 |
+| CI EMERGING MARKETS FUND A -FE | 491.7270 | 7,834.55 | 21.1942 | 10,421.76 |
+| CI SELECT CANADIAN EQUITY FUND A -FE | 681.2340 | 17,895.29 | 29.9444 | 20,399.14 |
+| Total Investment Funds and Deposit Notes | | $49,446.74 | | $58,682.92 |
+| Cash and Cash Equivalents | | | | |
+| Cash in your Manulife securities account | | | | 0.00 |
+| Total Cash and Cash Equivalents | | $0.00 | | $0.00 |
+| Total in Your Account (including cash) | | $49,446.74 | | $58,682.92 |
+| Total in Your Account (excluding cash) | | $49,446.74 | | $58,682.92 |
+\* Please refer to the Important Information section at the end of the statement package for an explanation of these terms, abbreviations and symbols.
+## Activity
+| Trade Date | Activity | Description | Quantity | Price ($) | Amount ($) | Cash Balance ($) |
+| - | - | - | - | - | - | - |
+| Jan 1, 2023 | | Opening cash balance | | | | 0.00 |
+| 24-Mar-23 | Mutual Fund Rebate | CI GLOBAL EQUITY CORPORATE CLASS A -FE | 0.2260 | 16.8510 | 3.81 | 0.00 |
+| 24-Mar-23 | Mutual Fund Rebate | CI GLOBAL RESOURCE FUND A -FE | 0.0300 | 25.2839 | 0.76 | 0.00 |
+| 24-Mar-23 | Mutual Fund Rebate | CI EMERGING MARKETS FUND A -FE | 0.0370 | 20.8610 | 0.78 | 0.00 |
+| 24-Mar-23 | Mutual Fund Rebate | CI SELECT CANADIAN EQUITY FUND A -FE | 0.1610 | 29.1461 | 4.68 | 0.00 |
+| Mar 31, 2023 | | Closing cash balance | | | | 0.00 |
+This statement includes only the activity recorded in your account since your last account statement. Cash balance is held with Manulife Securities
+Important Information for Your Accounts
+===
+This information applies to all accounts:
+## About Manulife Securities
+Manulife Securities Investment Services Inc. is a member of the Mutual Fund Dealers Association of Canada and the MFDA Investor Protection Corporation (excluding Quebec) and is indirectly, wholly-owned by Manulife Financial Corporation. Manulife Financial Corporation is a leading financial services group with principal operations in Asia, Canada and the United States.
+|||
+| - | - |
+| Head Office: | 500 - 1235 North Service Road West Oakville, Ontario, L6M 2W2 |
+| Mailing Address: | P.O. Box 1700 RPO Lakeshore West Oakville, Ontario, L6K 0G7 |
+| Phone: | 1-800-991-2121 |
+| Website: | www.manulifesecurities.ca |
+Manulife Securities Investment Services Inc. is a Member of, and is regulated by, the Mutual Fund Dealers Association of Canada (MFDA).
+## Important Client Information brochure
+The Manulife Securities Important Client Information Brochure (ICIB) is updated from time to time. The ICIB includes Relationship Disclosure information, your Client Account Agreement and other information important to you as an investor. A current copy of the ICIB is available on request from your advisor or at http://co.manulife.ca/securities/clientresources.
+## Please review this statement package carefully.
+If any information in your statement does not match your records, please contact your advisor, within 45 days of the statement date. Otherwise, we will consider the statement(s) complete and accurate. When you correspond with us, please remember to include your account number.
+## Explanation of terms, abbreviations and symbols
+This security position may be subject to a deferred sales charge (DSC) upon redemption
+\*\* Market value information has been used to estimate part or all of the book cost of this security position.
+\*\* Market Value information as at October 30, 2015 has been used to estimate part or all of the book cost of this security position.
+NDC - The book cost of this security position cannot be determined. This security position has been excluded from the total book cost calculation.
+NDM - Market value not determinable. This security position has been excluded from the total market value calculation.
+"total percentage return" means the cumulative realized and unrealized capital gains and losses of an investment, plus income from the investment, over a specified period of time, expressed as a percentage.
+## \* Book cost information
+Book cost means the total amount paid to purchase an investment, including any transaction charges related to the purchase, adjusted for reinvested distributions, returns of capital and corporate reorganizations.
+### Book cost
+### How we determine book cost
+For certain products, we receive the book cost of the security position directly from the product manufacturer and we update our records to reflect this book cost. For other products, our system determines the book cost of the security position. For security positions that are transferred in, the book cost may have been provided or reported by your previous dealer (see Book cost for transferred security positions). While we believe these sources to be reliable, we cannot guarantee the accuracy of the book cost shown in this statement. For further information on how we determined the book cost of a particular security position, please contact your advisor.
+Manulife Securities Investment Services Inc., Member MFDA IPC
+March 31, 2023
+Important Information for Your Accounts (continued)
+===
+## Changes to personal and investment objective
+Please contact your advisor immediately if there have been any material changes in your personal circumstances. These changes may be to your investment objectives, risk tolerance, time horizon or to other personal information that you previously provided such as income, number of dependents or address. If you do not notify your advisor of these changes, we will assume that your personal information in our records is accurate and current. Manulife, Manulife Securities, the Block Design, the Four Cube Design, and Strong Reliable Trustworthy Forward-thinking are trademarks of The Manufacturers Life Insurance Company and are used by it, and by its affiliates under license.
+## Important Information for Client Name Accounts
+This information applies to the following accounts: Client Name LRSP/LIRA B723278L
+### Your Client Name account
+This statement shows the investments you hold in your client name account(s) and the cash balance and cash transactions in your Manulife Securities account(s). Investments in your client name account(s) are registered in your name on the securityholder records of the mutual fund, which are required to be maintained by the mutual fund. Your securities have been issued in uncertificated form and therefore are not held in custody by us or any other third party.
+### MFDA Investor Protection Corporation
+Securities held in "client name" accounts are not covered by customer protection, the cash balance may be protected. Customers' accounts are protected by the MFDA Investor Protection Corporation ("IPC") within specific limits. Customers with accounts in Quebec are generally not covered by the IPC. Please refer to the IPC Coverage Policy on the website at www.mfda.ca/ipc for a description of the nature and limits of coverage or contact the IPC at 1-888-466-6332.
+### Market Price
+We obtain market prices from industry sources that we believe to be reliable. When available, we have reported the market price, as at the end of the reporting period, for each investment you hold in your account. If the market price of a security is not determinable, we have identified the position with a NDM notation and excluded it from the total market value calculation. Manulife Securities has established a pricing of securities policy which sets the time frame, varying by investment product, for prices to remain valid before they are marked as not determinable. For more information on Manulife Securities' Pricing of Securities Policy, please contact your advisor.
