@@ -2,9 +2,10 @@ import time
 import streamlit as st
 import pandas as pd
 
-from app.gpt_integration import get_structured_data
-from app.prompts import FinancialStatement
-from app.utility import load_sample_statements_ocr
+from gpt_integration import get_structured_data
+from prompts import FinancialStatement
+from utility import load_sample_statements_ocr
+from preprocessing import clean_markdown_excluding_tables
 
 
 start_time = time.time()
@@ -29,7 +30,8 @@ def main():
     if selected_item:
         # Parse the selected item
         parse_start_time = time.time()
-        statement_data: FinancialStatement = get_structured_data(sample_statements[selected_item].content)
+        filtered_statement_date = clean_markdown_excluding_tables(sample_statements[selected_item].content)
+        statement_data: FinancialStatement = get_structured_data(filtered_statement_date)
         st.write(f"Selected item parsed in {time.time() - parse_start_time:.2f} seconds")
 
         # Display client information
