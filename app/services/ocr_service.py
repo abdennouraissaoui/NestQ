@@ -1,8 +1,15 @@
+"""
+Logic for interacting with the OCR service
+"""
+
 from azure.core.exceptions import HttpResponseError
 
-from app.utility import get_client
-from azure.ai.documentintelligence.models import AnalyzeDocumentRequest, ContentFormat, AnalyzeResult
-# TODO: # https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/concept-retrieval-augmented-generation?view=doc-intel-4.0.0
+from app.utils.utility import get_client
+from azure.ai.documentintelligence.models import (
+    AnalyzeDocumentRequest,
+    ContentFormat,
+    AnalyzeResult,
+)
 
 
 def get_document_analysis(file_base64) -> AnalyzeResult:
@@ -11,8 +18,7 @@ def get_document_analysis(file_base64) -> AnalyzeResult:
         "prebuilt-layout",
         AnalyzeDocumentRequest(bytes_source=file_base64),
         locale="en-US",
-        output_content_format=ContentFormat.MARKDOWN
-
+        output_content_format=ContentFormat.MARKDOWN,
     )
     try:
         result: AnalyzeResult = poller.result()

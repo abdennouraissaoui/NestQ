@@ -1,7 +1,12 @@
-from app.azure_ocr import get_document_analysis
-from app.utility import load_file_as_base64, load_sample_statements_ocr, save_sample_statements_ocr
+from app.services.ocr_service import get_document_analysis
+from app.utils.utility import (
+    load_file_as_base64,
+    load_sample_statements_ocr,
+    save_sample_statements_ocr,
+)
 import os
 from tqdm import tqdm
+import pandas as pd
 
 
 def find_pdfs(directory):
@@ -19,7 +24,7 @@ def find_pdfs(directory):
     # Walk through the directory
     for root, _, files in os.walk(abs_directory):
         for file in files:
-            if file.lower().endswith('.pdf'):
+            if file.lower().endswith(".pdf"):
                 # Get the absolute path of the PDF file
                 pdf_path = os.path.join(root, file)
                 pdf_paths.append(pdf_path)
@@ -33,7 +38,6 @@ def ocr_sample_statements(directory):
 
     The pickle file will be named "sample_statements_ocr.pkl" and will contain a dictionary with the file names as keys
      and the OCR results as values.
-
     """
     pdf_paths = find_pdfs(directory)
     scanned_pdfs = load_sample_statements_ocr()
@@ -46,4 +50,4 @@ def ocr_sample_statements(directory):
 
 
 if __name__ == "__main__":
-    ocr_sample_statements('../data/sample_statements')
+    ocr_sample_statements("../data/sample_statements")
