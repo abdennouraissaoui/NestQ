@@ -4,28 +4,8 @@ Schemas for the data to be extracted from the financial statements.
 
 from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator, ValidationInfo
-from enum import Enum
 
-
-class AccountType(str, Enum):
-    TFSA = "TFSA"
-    FHSA = "FHSA"
-    Cash = "Cash"
-    RRSP = "RRSP"
-    RRSP_Spousal = "RRSP-Spousal"
-    LIRA = "LIRA"
-    RESP_Family = "RESP-Family"
-    RIF_Spousal = "RIF-Spousal"
-    RESP_Single = "RESP-Single"
-    RRIF = "RRIF"
-    GRSP = "GRSP"
-    LRSP = "LRSP"
-    LIF = "LIF"
-    PRIF = "PRIF"
-    GTFSA = "GTFSA"
-    LRIF = "LRIF"
-    RLIF = "RLIF"
-    GSRSP = "GSRSP"
+from app.models.enums import AccountType
 
 
 class Client(BaseModel):
