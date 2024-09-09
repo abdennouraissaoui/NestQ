@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 from app.config import app_config
 
 
@@ -24,6 +25,9 @@ class DBConnectionManager:
     def close_all_connections(self):
         for connection in self._connections:
             connection.close()
+
+    def get_session(self):
+        return Session(bind=self.engine)
 
     def __del__(self):
         """
