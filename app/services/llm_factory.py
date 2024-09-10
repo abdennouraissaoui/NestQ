@@ -2,6 +2,7 @@ from openai import AzureOpenAI
 from pydantic import BaseModel
 from typing import List, Dict, Type, Any
 from app.config import app_config
+from openai import OpenAI
 
 
 class LlmFactory:
@@ -10,13 +11,15 @@ class LlmFactory:
         self.client = self._initialize_client()
 
     def _initialize_client(self) -> Any:
-        assert self.provider in ["azure-openai"]
+        assert self.provider in ["azure-openai", "local-lm-studio"]
         if self.provider == "azure-openai":
             return AzureOpenAI(
                 api_key=app_config.AZURE_OPENAI_API_KEY,
                 azure_endpoint=app_config.AZURE_OPENAI_ENDPOINT,
                 api_version="2024-08-01-preview",
             )
+        elif self.provider == "local-lm-studio":
+            return OpenAI(base_url="http://127.0.0.1:1234/v1", api_key="not-needed")
 
     def create_completion(
         self,
@@ -40,12 +43,10 @@ if __name__ == "__main__":
     from app.models.schemas import FinancialStatement
     from app.services.prompts import INVESTMENT_STATEMENT_DATA_EXTRACTION
     from pydantic import Field
-
-    from app.utils.misc import output_to_excel
     import time
-    from app.utils.utility import load_sample_statements_ocr
+    # from app.utils.utility import load_sample_statements_ocr
 
-    llm = LlmFactory("azure-openai")
+    llm = LlmFactory("local-lm-studio")
 
     class CompletionModel(BaseModel):
         response: str = Field(description="Your response to the user.")
@@ -62,15 +63,16 @@ if __name__ == "__main__":
     completion = llm.create_completion(
         response_format=CompletionModel,
         messages=messages,
-        model="gpt-4o",
+        model="meta-llama-3.1-8b-instruct-q4_k_m",
     )
 
-    print(completion.choices[0].message.parsed)
+    parsed_response = completion.choices[0].message.parsed
+    print(f"Parsed response: {parsed_response}")
 
     completion = llm.create_completion(messages=messages, model="gpt-4o-mini")
     print(completion.choices[0].message)
 
-    sample_statements = load_sample_statements_ocr()
+    # sample_statements = load_sample_statements_ocr()
     # sample_statement = sample_statements["bmo.pdf"]
     sample_statement = open(
         "./cleaned_texts/nbin_cleaned_text.txt", "r", encoding="utf-8"
@@ -93,6 +95,6 @@ if __name__ == "__main__":
         ],
     )
     structured_data = completion.choices[0].message.parsed
-    output_to_excel(structured_data)
+    # output_to_excel(structured_data)
     print(f"Selected item parsed in {time.time() - parse_start_time:.2f} seconds")
     print(structured_data)
