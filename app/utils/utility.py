@@ -3,29 +3,11 @@ import os
 import base64
 import pickle
 import pyperclip
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.documentintelligence import DocumentIntelligenceClient
-from openai import AzureOpenAI
 from app.config import app_config
-
 import pandas as pd
-
 from app.models.schemas import FinancialStatement
-
-
-def get_ai_client(client_type: str):
-    assert client_type in ["azure-openai", "document-intelligence"]
-    if client_type == "azure-openai":
-        return AzureOpenAI(
-            api_key=app_config.AZURE_OPENAI_API_KEY,
-            azure_endpoint=app_config.AZURE_OPENAI_ENDPOINT,
-            api_version="2024-08-01-preview",
-        )
-    elif client_type == "document-intelligence":
-        return DocumentIntelligenceClient(
-            endpoint=app_config.DOCUMENT_INTELLIGENCE_ENDPOINT,
-            credential=AzureKeyCredential(app_config.DOCUMENT_INTELLIGENCE_API_KEY),
-        )
+from datetime import datetime, timezone
+import pytz
 
 
 def dict_to_json_clipboard(dictionary):
@@ -42,7 +24,7 @@ def dataframes_to_string(dataframes, max_rows=7):
     return combined_string
 
 
-def load_file_as_base64(file_path):
+def load_file_as_base64(file_path) -> str:
     with open(file_path, "rb") as f:
         data = f.read()
     base64_bytes = base64.b64encode(data)
@@ -67,24 +49,6 @@ def parse_di_table(table):
         data.append(row_data)
     df = pd.DataFrame(data[1:], columns=data[0])
     return df
-
-
-def save_sample_statements_ocr(sample_layouts: dict):
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, "sample_statements_ocr.pkl")
-    with open(file_path, "wb") as handle:
-        pickle.dump(sample_layouts, handle)
-
-
-def load_sample_statements_ocr() -> dict:
-    # check if file exists. If not, return empty dict
-    current_dir = os.path.dirname(__file__)
-    file_path = os.path.join(current_dir, "sample_statements_ocr.pkl")
-    if not os.path.isfile(file_path):
-        return {}
-    with open(file_path, "rb") as handle:
-        sample_layouts = pickle.load(handle)
-    return sample_layouts
 
 
 def output_to_excel(statement_data: FinancialStatement):
@@ -137,3 +101,54 @@ def output_to_excel(statement_data: FinancialStatement):
             )
 
     print(f"Data exported to {file_name}")
+
+
+def epoch_to_utc(epoch_time):
+    """Convert Epoch Unix Timestamp to UTC datetime object."""
+    return datetime.fromtimestamp(epoch_time, tz=timezone.utc)
+
+
+def utc_to_epoch(utc_datetime):
+    """Convert UTC datetime object to Epoch Unix Timestamp."""
+    return int(utc_datetime.timestamp())
+
+
+def epoch_to_est(epoch_time):
+    """Convert Epoch Unix Timestamp to EST datetime object."""
+    utc_time = epoch_to_utc(epoch_time)
+    est_tz = pytz.timezone("America/New_York")
+    return utc_time.astimezone(est_tz)
+
+
+def est_to_epoch(est_datetime):
+    """Convert EST datetime object to Epoch Unix Timestamp."""
+    if (
+        est_datetime.tzinfo is None
+        or est_datetime.tzinfo.utcoffset(est_datetime) is None
+    ):
+        est_tz = pytz.timezone("America/New_York")
+        est_datetime = est_tz.localize(est_datetime)
+    return int(est_datetime.timestamp())
+
+
+def find_pdfs(directory):
+    """
+    Find all PDF files in a given directory.
+
+    This function recursively searches through the directory and its subdirectories for PDF files.
+    """
+    # Get the absolute path of the current directory
+    abs_directory = os.path.abspath(directory)
+
+    # List to store absolute paths of PDF files
+    pdf_paths = []
+
+    # Walk through the directory
+    for root, _, files in os.walk(abs_directory):
+        for file in files:
+            if file.lower().endswith(".pdf"):
+                # Get the absolute path of the PDF file
+                pdf_path = os.path.join(root, file)
+                pdf_paths.append(pdf_path)
+
+    return pdf_paths
