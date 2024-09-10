@@ -73,9 +73,8 @@ class Account(BaseModel):
             total_holdings_value = sum(
                 holding.market_value for holding in info.data["holdings"]
             )
-            total_value = total_holdings_value + (info.data.get("cash_balance") or 0)
             if (
-                abs(account_value - total_value) > 0.01
+                abs(account_value - total_holdings_value) > 0.01
             ):  # Allow for small rounding differences
                 raise ValueError(
                     f"Account value ({account_value}) does not match the sum of holdings market values "
