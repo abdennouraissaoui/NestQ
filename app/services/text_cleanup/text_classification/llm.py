@@ -6,17 +6,19 @@ from app.services.prompts import (
 from typing import Dict
 import json
 from abc import ABC, abstractmethod
+from openai.types.chat import ChatCompletion
 
 
 class BaseClassifier(ABC):
-    def __init__(self):
-        self._llm = LlmFactory("azure-openai")
+    def __init__(self, provider: str = "azure-openai"):
+        self._provider = provider
+        self._llm = LlmFactory(self._provider)
 
     @abstractmethod
     def get_prompt(self) -> Dict[str, str]:
         pass
 
-    def classify(self, text: str) -> Dict[str, int]:
+    def classify(self, text: str, model) -> Dict[str, int]:
         prompt = self.get_prompt()
         messages = [
             {"role": "system", "content": prompt["system"]},
@@ -25,12 +27,23 @@ class BaseClassifier(ABC):
                 "content": prompt["user"].format(text=text),
             },
         ]
-
-        completion = self._llm.create_completion(
-            model="gpt-4o-mini",
-            messages=messages,
-            response_format={"type": "json_object"},
-        )
+        params = {"model": model, "messages": messages, "temperature": 0.2}
+        if self._provider == "azure-openai":
+            params["response_format"] = {"type": "json_object"}
+        else:
+            params["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "classification_response",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {"exclude": {"type": "integer"}},
+                        "required": ["exclude"],
+                    },
+                },
+            }
+        completion = self._llm.create_completion(**params)
 
         response = completion.choices[0].message.content
         classification = json.loads(response)
@@ -41,23 +54,17 @@ class DisclaimerPageClassifier(BaseClassifier):
     def get_prompt(self) -> Dict[str, str]:
         return DISCLAIMER_PAGE_CLASSIFICATION_PROMPT
 
-    def classify_text(self, text: str) -> Dict[str, int]:
-        return self.classify(text)
 
-
-class TextContentClassifier(BaseClassifier):
+class StatementExerptClassifier(BaseClassifier):
     def get_prompt(self) -> Dict[str, str]:
         return STANDARD_TEXT_CLASSIFICATION_PROMPT
-
-    def classify_content(self, text: str) -> Dict[str, int]:
-        return self.classify(text)
 
 
 # Example usage
 if __name__ == "__main__":
     # python -m app.services.text_cleanup.text_classification.llm
-    classifier = DisclaimerPageClassifier()
     sample_disclaimer_text = """# Additional Information
+    We have an introducing broker/carrying broker agreement with National Bank Financial Inc. (NBF Inc.), through its National Bank Independent Network (NBIN) division. Under such agreement, NBIN may provide us with custody, trading, clearing and settlement services. As the Introducing Broker, we are responsible for determining and supervising the suitability of trading activity, and the opening and initial approval of accounts.
     We have an introducing broker/carrying broker agreement with National Bank Financial Inc. (NBF Inc.), through its National Bank Independent Network (NBIN) division. Under such agreement, NBIN may provide us with custody, trading, clearing and settlement services. As the Introducing Broker, we are responsible for determining and supervising the suitability of trading activity, and the opening and initial approval of accounts.
 
     Please review your Investment Portfolio Statement . Any errors should be reported to our Compliance Department in writing within 30 days. For additional information, please speak to your Investment Advisor.
@@ -145,7 +152,7 @@ if __name__ == "__main__":
     <!-- PageNumber="2 of 7" -->
 
     """
-    sample_non_disclaimer_text = """<figure>
+    sample_non_disclaimer_text = r"""<figure>
 
 ![](figures/0)
 
@@ -223,12 +230,34 @@ CIPF Canadian Investor Protection Fund MEMBER
 
 
 Investment Portfolio Statement As of August 31, 2022"""
+    sample_generic_statement_exerpt = r"""The amounts shown in this section are given in Canadian dollars.
+    The subsection on Asset Allocation indicates how the consolidated financial assets you hold with us are distributed across each of the basic asset classes. Any securities sold short or debit cash positions are excluded from this asset mix calculation."""
+    sample_non_generic_statement_exerpt = r"""| - | - |
+    | Your Account Number: | 374-40273-1-3 |
+    | Trustee: | Royal Trust Company |
+    | Date of Last Statement: | FEB. 28, 2023 |"""
+
     import time
 
     start_time = time.time()
-    result = classifier.classify_text(sample_disclaimer_text)
-    print(result, "DISCLAIMER")
-    result = classifier.classify_text(sample_non_disclaimer_text)
-    print(result, "NON-DISCLAIMER")
+    # result = classifier.classify(
+    #     sample_disclaimer_text, "meta-llama-3.1-8b-instruct-q4_k_m"
+    # )
+    # print(result, "DISCLAIMER")
+    # result = classifier.classify(
+    #     sample_non_disclaimer_text, "meta-llama-3.1-8b-instruct-q4_k_m"
+    # )
+    # print(result, "NON-DISCLAIMER")
+
+    # classifier = StatementExerptClassifier(provider="local-lm-studio")
+    classifier = StatementExerptClassifier(provider="azure-openai")
+    result = classifier.classify(sample_generic_statement_exerpt, "gpt-4o-mini")
+    print(result, "GENERIC")
+    classifier = StatementExerptClassifier(provider="local-lm-studio")
+    result = classifier.classify(
+        sample_non_generic_statement_exerpt, "meta-llama-3.1-8b-instruct-q4_k_m"
+    )
+    print(result, "NON-GENERIC")
+
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
