@@ -3,7 +3,7 @@ INVESTMENT_STATEMENT_DATA_EXTRACTION = {
     
     You will ensure that the extracted data is accurate. If any information is missing from the statement, represent it as an empty string or zero, as appropriate for the data type.
 
-    Note: The sum of the account holdings' total market value must equal the account value.
+    Note: The sum of the account holdings' total market value must equal the account value. Cash is also considered a holding.
     """,
     "user": 'STATEMENT TEXT: """{statement_text}"""',  # markdown from Azure document intelligence Layout
 }

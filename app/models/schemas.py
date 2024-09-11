@@ -78,7 +78,7 @@ class Account(BaseModel):
             ):  # Allow for small rounding differences
                 raise ValueError(
                     f"Account value ({account_value}) does not match the sum of holdings market values "
-                    f"({total_holdings_value}) plus cash balance ({info.data.get('cash_balance') or 0})"
+                    f"({total_holdings_value})"
                 )
         return account_value
 
