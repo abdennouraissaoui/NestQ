@@ -1,3 +1,9 @@
-"""
-API routes for the application.
-"""
+# TODO: Add run instructions to README.md
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
