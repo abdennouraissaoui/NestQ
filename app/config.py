@@ -15,6 +15,8 @@ class Config:
     AZURE_OPENAI_API_KEY = config["azure-openai"]["API_KEY"]
     AZURE_OPENAI_ENDPOINT = config["azure-openai"]["ENDPOINT"]
 
+    RELEVANCE_THRESHOLD = 0.7
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
