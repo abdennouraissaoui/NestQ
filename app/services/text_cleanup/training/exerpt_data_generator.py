@@ -48,6 +48,13 @@ def clean_markdown_text(ocr_text):
     # Remove images
     cleaned_text = re.sub(r"!\[.*?\]\(.*?\)", "", cleaned_text)
 
+    # Remove URLs
+    cleaned_text = re.sub(
+        r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+        "",
+        cleaned_text,
+    )
+
     return cleaned_text
 
 
