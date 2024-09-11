@@ -1,0 +1,196 @@
+<!-- PageNumber="1/4" -->
+
+<figure>
+
+![](figures/0)
+
+<!-- FigureContent="w Wealthsimple Investments Inc." -->
+
+</figure>
+
+
+ORDER EXECUTION ONLY ACCOUNT All figures in $CAD unless otherwise specified
+
+| Account No. | Owner | Statement Period |
+| - | - | - |
+| HQ0LJ9XK0CAD | Jan Russell Galvez | 2023-03-01 - 2023-03-31 |
+
+201 - 80 Spadina Avenue Toronto, ON, M5V 2J4 Phone: (416) 595-7200 Fax: (647) 245-1002
+
+Jan Russell Galvez 5087 Watling Street Burnaby BC V5J1W8 CA
+
+| Tax-Free Savings Account |||||
+| | Market Value($) | % of Market Value | Book Value($) | % of Total Book |
+||||| Value |
+| - | - | - | - | - |
+| Cash | $8.06 | 0.35 | $8.06 | 0.35 |
+| Canadian Equities and | $2,235.07 | 99.64 | $2,234.71 | 99.64 |
+| Alternatives | | | | |
+| US Equities and Alternatives | $0.00 | 0.00 | $0.00 | 0.00 |
+| Total Portfolio | $2,243.13 | 100.00 | $2,242.77 | 100.00 |
+
+
+# Portfolio Cash
+
+|||
+| - | - |
+| Last Statement Cash Balance | $1.31 |
+| Total Cash Paid In | $781.54 |
+| Total Cash Paid Out | $774.79 |
+| Closing Cash Balance | $8.06 |
+
+Cash Paid In
+
+|||
+| - | - |
+| Deposits | $780.00 |
+| Proceeds from | |
+| sales | $0.00 |
+| Dividends | $1.54 |
+| Interest | $0.00 |
+| Other | $0.00 |
+| Fees | $0.00 |
+| Taxes | $0.00 |
+| Cost of | |
+| Investments | $774.79 |
+| Withdrawals | $0.00 |
+| Other | $0.00 |
+
+|||
+| - | - |
+| Contributions: | |
+| Contributions (year to date): | $1,925.00 |
+| First 60 Days | $1,145.00 |
+| Rest of Year | $780.00 |
+
+Cash Paid Out
+
+| Portfolio Equities |||||||
+| | Symbol | Total Quantity | Segregated Quantity | Market Price ($) | Market Value ($) | Book Cost\* ($) |
+| - | - | - | - | - | - | - |
+| Canadian Equities and Alternatives | | | | | | |
+| BlackRock Canada iShares S&P/TSX | XRE | 6.0000 | 6.0000 | $17.06 CAD | $102.36 | $99.78 |
+| Capped REIT Index ETF | | | | | | |
+| BMO Covered Call Canadian Banks ETF | ZWB | 17.0000 | 17.0000 | $17.93 CAD | $304.81 | $313.12 |
+| Invesco NASDAQ 100 Index ETF | QQC | 18.0000 | 18.0000 | $21.18 CAD | $381.24 | $376.74 |
+| iShares Core MSCI EAFE IMI Index ETF | XEF | 10.0000 | 10.0000 | $33.51 CAD | $335.10 | $330.05 |
+| iShares S&P/TSX Composite High | XEI | 13.0000 | 13.0000 | $24.93 CAD | $324.09 | $334.49 |
+| Dividend Income Index ETF | | | | | | |
+| Vanguard S&P 500 Index ETF | VFV | 7.9995 | 7.9995 | $98.44 CAD | $787.47 | $780.53 |
+
+US Equities and Alternatives (The conversion rate used to convert your month-end Market Value to CAD is: $1USD = $1.353300 CAD)
+
+Total $2,235.07 $2,234.71 \*Book Cost - the total amount paid to purchase a security, including any transaction charges related to the purchase, adjusted for corporate reorganizations. The transaction charge schedule can be found here. The book cost has been calculated to the best of our ability based on the information available to us, unless provided by you or your agent. As such, this information should not be used for the purpose of tax reporting as certain events are dependent on individual circumstances and the book value may not reflect all required adjustments. Please contact us to update the statement records if necessary.
+
+CIPF Canadian Investor Protection Fund MEMBER
+
+<figure>
+
+![](figures/1)
+
+<!-- FigureContent="IIROC" -->
+
+</figure>
+
+
+Regulated by Investment Industry Regulatory Organization of Canada
+
+<!-- PageNumber="2/4" -->
+
+| Activity - Current period ||||||
+| Date || Transaction Description  ||| Charged ($) Credit ($) Balance ($)   |
+| - | - | - | - | - | - |
+|| 2023-03-02 DIV  | ZWB - BMO Covered Call Canadian Banks ETF: Stock dividend distribution, received at 2023-03-02 | $0.00 | $0.24 | $1.55 |
+|| 2023-03-10 CONT  | Contribution (executed at 2023-03-10) | $0.00 | $305.00 | $306.55 |
+|| 2023-03-14 BUY  | ZWB - BMO Covered Call Canadian Banks ETF: Bought 15.0000 shares (executed at 2023-03-10) | $274.50 | $0.00 | $32.05 |
+|| 2023-03-14 BUY  | VFV - Vanguard S&P 500 Index ETF: Bought 0.2488 shares (executed at 2023-03-10) | $23.77 | $0.00 | $8.28 |
+|| 2023-03-22 CONT  | Contribution (executed at 2023-03-22) | $0.00 | $475.00 | $483.28 |
+|| 2023-03-24 BUY  | QQC - Invesco NASDAQ 100 Index ETF: Bought 18.0000 shares (executed at 2023-03-22) | $376.74 | $0.00 | $106.54 |
+|| 2023-03-24 BUY  | XRE - BlackRock Canada iShares S&P/TSX Capped REIT Index ETF: Bought 6.0000 shares (executed at 2023-03-22) | $99.78 | $0.00 | $6.76 |
+|| 2023-03-31 DIV  | XEI - iShares S&P/TSX Composite High Dividend Income Index ETF: Stock dividend distribution, received at 2023-03-31 | $0.00 | $1.30 | $8.06 |
+
+<!-- PageFooter="CIPF Canadian Investor Protection Fund MEMBER" -->
+
+<figure>
+
+![](figures/2)
+
+<!-- FigureContent="IIROC" -->
+
+</figure>
+
+
+Regulated by Investment Industry Regulatory Organization of Canada
+
+<!-- PageNumber="3/4" -->
+
+
+# LEVERAGE DISCLOSURE
+
+Using borrowed money to finance the purchase of securities involves greater risk than using cash resources only. If you borrow money to purchase securities, your responsibility to repay the loan and pay interest as required by its terms remains the same even if the value of the securities purchased declines.
+
+
+# STATEMENT NOTES
+
+Client accounts for Wealthsimple Trade and Wealthsimple Invest held at Wealthsimple Investments Inc. are protected by CIPF within specified limits in the event Wealthsimple Investments Inc. becomes insolvent. A brochure describing the nature and limits of coverage is available upon request. www.cipf.ca.
+
+Free credit balances in non-registered accounts represent funds payable on demand which, although properly recorded in our books, are not segregated and may be used in the conduct of our business. Cash balances in registered accounts are held in trust by The Canada Trust Company. Occasional failed deliveries from executing brokers can cause shares to be desegregated based on approved segregation logic.
+
+A statement of financial condition and a current list of directors and officers for Wealthsimple Investments Inc. will be furnished upon request. Clients in British Columbia are entitled to certain additional information about Wealthsimple Investments Inc., including information about commissions and fees that we charge, and about any administrative proceedings that may relate to the firm or its staff.
+
+All sales of securities are disclosed to the Canada Revenue Agency on a yearly basis. These transactions must be reported on your annual income tax return. Keep this statement for income tax purposes, as no other will be provided in respect to these transactions. Employees of Wealthsimple Investments Inc. are not authorized to provide tax or legal advice. Please consult your accountant or lawyer on such matters. The information provided in this statement is compiled from our records and other sources believed to be reliable. However, we give no warranty as to the accuracy or completeness of the data nor is such warranty implied. Use of any of the information contained on this statement is entirely at the discretion of the recipient and no liability may be attached to the broker/dealer indicated on the face of this statement or such usage.
+
+For regulatory purposes, Self Regulatory Organizations including Market Regulation Services Inc., the Investment Industry Regulatory Organization of Canada, the Mutual Fund Dealers Association of Canada, Bourse de Montreal Inc., and, the Canadian Investor Protection Fund (collectively "SROs") require access to personal information of current and former clients, employees, agents, directors, officers, partners and others that has been collected or used by Regulated Persons. SROs collect, use or disclose such personal information obtained from Regulated Persons for regulatory purposes, including:
+
+Surveillance of trading-related activity, sales, financial compliance, trade desk review and other regulatory audits, investigation of potential regulatory and statutory violations, regulatory databases, enforcement or disciplinary proceedings, reporting to securities regulators, and, information-sharing with securities regulatory authorities, regulated marketplaces, other self- regulatory organizations and law enforcement agencies in any jurisdiction in connection with any of the foregoing.
+
+This statement reflects all obligations of the firm to you. Please examine this statement of account promptly. Any errors or omissions must be reported in writing within 45 days as of the date of this statement to: Wealthsimple Investments Inc. Compliance Department, 201 - 80 Spadina Avenue, Toronto, Ontario, M5V 2J4 or you will be precluded from asserting that errors or omissions have occurred.
+
+ENDNOTES
+
+1\. The market value for this security cannot be determined as there is no active market.
+
+2\. The market value for this security has been estimated as there is no active market.
+
+3\. Some or all of the book cost of this security has been determined using a fair market value calculation.
+
+<!-- PageFooter="CIPF Canadian Investor Protection Fund MEMBER" -->
+
+<figure>
+
+![](figures/3)
+
+<!-- FigureContent="IIROC" -->
+
+</figure>
+
+
+Regulated by Investment Industry Regulatory Organization of Canada
+
+<!-- PageNumber="4/4" -->
+
+Information about Statement Codes AFFILIATE - Affiliate bonus BUY - Purchase of assets BUYTOOPEN - Purchase of option contracts CLB - Canada Learning Bond grant CONT - Contribution CORRECTION - Applied correction CREDIT - Credit issued CRYPTORWD - Crypto staking reward DCTFEE - Debit card transaction fee DEP - Non-contribution deposit DIV - Dividends received DSCFEE - Deferred sales charge EXERCISE - Option exercise EXPIRY - Option expiry FCPT - Foreign content penalty tax FEE - Fee GIFTCARD - Giftcard redeemed
+
+GRANT - Grant payment GRTRP - Grant repayment GST - Goods and services tax HBP - Redemption for home buyers' plan INT - Interest received JRL - Journal LLP - Redemption for lifelong learner plan LOAN - Stocks on loan NCDIS - Non-cash distribution NRT - Non resident tax withheld NSF - Reversal of deposit due to non-sufficient funds OBP - Online bill payment PST - Provincial sales tax QST - Quebec sales tax RECALL - Termination of stock on loan REFER - Referral bonus
+
+ROC - Return of capital SELL - Sell of assets in an account SELLTOCLOSE - Sell of option contracts STKDIS - Stock distribution STKREORG - Stock re-organization TAX - Tax withheld TRFIN - Transfer into the account TRFINTF - Tax-free transfer into the account TRFOUT - Transfer out of the account TRFOUTTF - Tax-free transfer out of the account WD - Non-contribution withdrawal WHTFED - Federal withholding tax WHTPROQC - Quebec withholding tax YTD - Year to Date
+
+Wealthsimple Investments Inc. (formerly Canadian ShareOwner Investments Inc.) is a wholly owned subsidiary of Wealthsimple Financial Corp. Wealthsimple Trade is a division of and is licensed for use by Wealthsimple Investments Inc.
+
+Wealthsimple ETFs, Power Corporation of Canada (POW), Great West Life (GWL) and IGM Financial Inc. (IGM) are related/connected issuers of Wealthsimple Investments Inc.
+
+CIPF
+
+Canadian Investor Protection Fund MEMBER
+
+<figure>
+
+![](figures/4)
+
+<!-- FigureContent="IIROC" -->
+
+</figure>
+
+
+Regulated by Investment Industry Regulatory Organization of Canada
+:selected: :unselected: :selected: :selected: :unselected: :unselected:
