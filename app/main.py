@@ -1,44 +1,32 @@
 import time
 import streamlit as st
 import pandas as pd
-from app.services.llm_service import get_structured_data
-from app.models.schemas import FinancialStatement
-from app.utils.utility import load_sample_statements_ocr
-from app.services.text_cleanup.preprocessing import clean_markdown_excluding_tables
-
+from app.services.statement_extractor import StatementExtractor
 
 start_time = time.time()
-sample_statements: dict = load_sample_statements_ocr()
 st.write(f"Sample statements loaded in {time.time() - start_time:.2f} seconds")
 
 
 # Streamlit app
 def main():
     st.title("Investment Statement Viewer")
-    # Description
     st.write("""
-    This app allows you to select a sample statement from the list below and retrieves holdings information.
+    This app allows you to upload an investment statement PDF and view the extracted information.
     """)
 
-    # Sample list of items
-    items = list(sample_statements.keys())
-    print(items)
+    # File uploader
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
-    # User selects an item from the list
-    selected_item = st.selectbox("Select a sample statement", items)
+    if uploaded_file is not None:
+        # Save the uploaded file temporarily
+        with open("temp_statement.pdf", "wb") as f:
+            f.write(uploaded_file.getvalue())
 
-    if selected_item:
-        # Parse the selected item
+        # Extract data from the uploaded statement
         parse_start_time = time.time()
-        filtered_statement_date = clean_markdown_excluding_tables(
-            sample_statements[selected_item].content
-        )
-        statement_data: FinancialStatement = get_structured_data(
-            filtered_statement_date
-        )
-        st.write(
-            f"Selected item parsed in {time.time() - parse_start_time:.2f} seconds"
-        )
+        extractor = StatementExtractor("temp_statement.pdf")
+        statement_data = extractor.extract_financial_statement()
+        st.write(f"Statement parsed in {time.time() - parse_start_time:.2f} seconds")
 
         # Display client information
         st.header("Client Information")
@@ -52,6 +40,7 @@ def main():
         st.write(f"**Postal Code:** {statement_data.client.client_postal_code}")
         st.write(f"**Country:** {statement_data.client.client_country}")
 
+        # Display account information
         for account in statement_data.accounts:
             st.header(f"Account {account.account_id} Information")
             st.write(f"**Account Type:** {account.account_type.value}")
