@@ -17,6 +17,11 @@ class Config:
 
     RELEVANCE_THRESHOLD = 0.7
 
+    SALT = config["auth"]["SALT"]
+    AUTH_SECRET_KEY = config["auth"]["SECRET_KEY"]
+    AUTH_ALGORITHM = config["auth"]["ALGORITHM"]
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(config["auth"]["ACCESS_TOKEN_EXPIRE_MINUTES"])
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

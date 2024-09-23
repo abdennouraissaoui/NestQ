@@ -3,8 +3,6 @@ Database models for the application.
 Models must always be in sync with the database.
 """
 
-from app.services.db_connection_manager import DBConnectionManager
-import uuid
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
     Column,
@@ -17,8 +15,9 @@ from sqlalchemy import (
     Index,
     BigInteger,
     Enum,
+    LargeBinary,
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 import time
 from app.models.enums import (
@@ -42,7 +41,7 @@ def utc_timestamp():
 class Firm(Base):
     __tablename__ = "firms"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
@@ -56,22 +55,20 @@ class Firm(Base):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    firm_id = Column(UUID(as_uuid=True), ForeignKey("firms.id"), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    firm_id = Column(Integer, ForeignKey("firms.id"), nullable=False)
     role = Column(Enum(Role), nullable=False)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
-    password = Column(String(255), nullable=False)
+    password = Column(LargeBinary, nullable=False)
     phone_number = Column(String(20), nullable=True)
-    referred_by_user_id = Column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=True
-    )
+    referred_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     last_login = Column(BigInteger, nullable=True)
     sign_in_count = Column(Integer, default=0, nullable=False)
     last_sign_in_at = Column(BigInteger, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
-    created_by = Column(UUID(as_uuid=True), nullable=True)
+    created_by = Column(Integer, nullable=True)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
@@ -102,13 +99,13 @@ class JSONType(TypeDecorator):
 class AuditLog(Base):
     __tablename__ = "audit_log"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     table_name = Column(String(100), nullable=False)
-    record_id = Column(UUID(as_uuid=True), nullable=False)
+    record_id = Column(Integer, nullable=False)
     action = Enum(AuditLogAction, nullable=False)
     old_data = Column(JSONType, nullable=True)
     new_data = Column(JSONType, nullable=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     timestamp = Column(BigInteger, default=utc_timestamp, nullable=False)
     user = relationship("User", back_populates="audit_logs")
@@ -121,8 +118,8 @@ class AuditLog(Base):
 class Advisor(Base):
     __tablename__ = "advisors"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -135,10 +132,10 @@ class Advisor(Base):
 class Client(Base):
     __tablename__ = "clients"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
-    advisor_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    advisor_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -154,8 +151,8 @@ class Client(Base):
 class Address(Base):
     __tablename__ = "addresses"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    client_id = Column(UUID(as_uuid=True), ForeignKey("clients.id"), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
     unit_number = Column(String(10), nullable=True)
     street_number = Column(String(10), nullable=False)
     street_name = Column(String(100), nullable=False)
@@ -174,9 +171,9 @@ class Address(Base):
 class Holding(Base):
     __tablename__ = "holdings"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    account_id = Column(UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=False)
-    asset_id = Column(UUID(as_uuid=True), ForeignKey("assets.id"), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    asset_id = Column(Integer, ForeignKey("assets.id"), nullable=False)
     symbol = Column(String(20), nullable=True)
     description = Column(String(255), nullable=False)
     cusip = Column(String(9), nullable=True)
@@ -203,7 +200,7 @@ class Holding(Base):
 class Asset(Base):
     __tablename__ = "assets"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     symbol = Column(String(10), nullable=False, unique=True)
     description = Column(Text, nullable=True)
@@ -218,8 +215,8 @@ class Asset(Base):
 class Account(Base):
     __tablename__ = "accounts"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    client_id = Column(UUID(as_uuid=True), ForeignKey("clients.id"), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
     account_number = Column(String(50), nullable=False, unique=True)
     account_type = Column(Enum(AccountType), nullable=False)
     currency = Column(String(3), nullable=False)
@@ -240,8 +237,8 @@ class Account(Base):
 class Scan(Base):
     __tablename__ = "scans"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    client_id = Column(UUID(as_uuid=True), ForeignKey("clients.id"), nullable=False)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
     uploaded_file = Column(String(255), nullable=False)
     page_count = Column(Integer, nullable=False)
     file_name = Column(String(255), nullable=False)
@@ -268,10 +265,8 @@ class Subscription(Base):
     # https://courses.bigbinaryacademy.com/handling-stripe-subscriptions/designing-database-for-subscription/
     __tablename__ = "subscriptions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    advisor_id = Column(
-        UUID(as_uuid=True), ForeignKey("advisors.id"), nullable=False, unique=True
-    )
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    advisor_id = Column(Integer, ForeignKey("advisors.id"), nullable=False, unique=True)
     stripe_subscription_id = Column(String(255), unique=True, nullable=False)
     status = Column(Enum(SubscriptionStatus), nullable=False)
     tier = Column(Enum(SubscriptionTier), nullable=False)
@@ -303,10 +298,8 @@ class Subscription(Base):
 class Price(Base):
     __tablename__ = "prices"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    subscription_id = Column(
-        UUID(as_uuid=True), ForeignKey("subscriptions.id"), nullable=False
-    )
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    subscription_id = Column(Integer, ForeignKey("subscriptions.id"), nullable=False)
     stripe_price_id = Column(String(255), unique=True, nullable=False)
     stripe_product_id = Column(String(255), nullable=False)
     amount = Column(Integer, nullable=False)
@@ -333,7 +326,7 @@ class Price(Base):
 class WebhookEvent(Base):
     __tablename__ = "webhook_events"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     external_event_id = Column(String(255), unique=True, nullable=False)
     event_type = Column(String(255), nullable=False)
     data = Column(JSONType, nullable=False)
@@ -350,9 +343,6 @@ class WebhookEvent(Base):
 
 # Create tables in the database
 if __name__ == "__main__":
-    dbcm = DBConnectionManager()
-    conn = dbcm.get_connection()
-    Base.metadata.create_all(conn)
+    from utils.db_connection_manager import engine
 
-    conn.commit()
-    dbcm.close_all_connections()
+    Base.metadata.create_all(engine)
