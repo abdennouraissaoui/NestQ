@@ -73,8 +73,8 @@ class User(Base):
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
     firm = relationship("Firm", back_populates="users")
-    clients = relationship(
-        "Client", back_populates="advisor", foreign_keys="Client.advisor_id"
+    prospects = relationship(
+        "Prospect", back_populates="advisor", foreign_keys="Prospect.advisor_id"
     )
     referred_users = relationship("User", back_populates="referred_by")
     referred_by = relationship(
@@ -129,8 +129,8 @@ class Advisor(Base):
     __table_args__ = (Index("ix_advisors_user_id", "user_id"),)
 
 
-class Client(Base):
-    __tablename__ = "clients"
+class Prospect(Base):
+    __tablename__ = "prospects"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(50), nullable=False)
@@ -141,11 +141,11 @@ class Client(Base):
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
 
-    advisor = relationship("User", back_populates="clients")
-    accounts = relationship("Account", back_populates="client")
-    addresses = relationship("Address", back_populates="client")
-    scans = relationship("Scan", back_populates="client")
-    __table_args__ = (Index("ix_clients_advisor_id", "advisor_id"),)
+    advisor = relationship("User", back_populates="prospects")
+    accounts = relationship("Account", back_populates="prospect")
+    addresses = relationship("Address", back_populates="prospect")
+    scans = relationship("Scan", back_populates="prospect")
+    __table_args__ = (Index("ix_prospects_advisor_id", "advisor_id"),)
 
 
 class Address(Base):
@@ -330,12 +330,6 @@ class WebhookEvent(Base):
     external_event_id = Column(String(255), unique=True, nullable=False)
     event_type = Column(String(255), nullable=False)
     data = Column(JSONType, nullable=False)
-    processed = Column(Boolean, default=False, nullable=False)
-    processing_errors = Column(Text, nullable=True)
-    created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
-    updated_at = Column(
-        BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
-    )
 
     def __repr__(self):
         return f"<WebhookEvent(id={self.id}, stripe_event_id={self.stripe_event_id}, event_type={self.event_type}, processed={self.processed})>"
