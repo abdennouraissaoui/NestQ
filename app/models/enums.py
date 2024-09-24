@@ -70,4 +70,4 @@ class ScanStatus(Enum):
 class Role(Enum):
     ADMIN = "Admin"
     ADVISOR = "Advisor"
-    CLIENT = "Client"
+    PROSPECT = "Prospect"
