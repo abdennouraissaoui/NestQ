@@ -1,63 +1,84 @@
-import time
-import streamlit as st
-import pandas as pd
-from app.services.statement_extractor import StatementExtractor
+from fastapi import FastAPI, Request, status, HTTPException
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
+from app.routers import auth, user, document, prospect
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import ValidationError
+import os
+from app.models.database.schema import Base
+from utils.db_connection_manager import engine
 
-start_time = time.time()
-st.write(f"Sample statements loaded in {time.time() - start_time:.2f} seconds")
+
+app = FastAPI()
 
 
-# Streamlit app
-def main():
-    st.title("Investment Statement Viewer")
-    st.write("""
-    This app allows you to upload an investment statement PDF and view the extracted information.
-    """)
+# session = get_db()
+Base.metadata.create_all(engine)
+# session.commit()
 
-    # File uploader
-    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+app.mount("/static", StaticFiles(directory="./static"), name="static")
 
-    if uploaded_file is not None:
-        # Save the uploaded file temporarily
-        with open("temp_statement.pdf", "wb") as f:
-            f.write(uploaded_file.getvalue())
 
-        # Extract data from the uploaded statement
-        parse_start_time = time.time()
-        extractor = StatementExtractor("temp_statement.pdf")
-        statement_data = extractor.extract_financial_statement()
-        st.write(f"Statement parsed in {time.time() - parse_start_time:.2f} seconds")
+@app.get("/")
+def health_check():
+    return {"status": "Healthy now"}
 
-        # Display client information
-        st.header("Client Information")
-        st.write(f"**First Name:** {statement_data.client.first_name}")
-        st.write(f"**Last Name:** {statement_data.client.last_name}")
-        st.write(f"**Unit Number:** {statement_data.client.client_unit_number}")
-        st.write(f"**Street Number:** {statement_data.client.client_street_number}")
-        st.write(f"**Street Name:** {statement_data.client.client_street_name}")
-        st.write(f"**City:** {statement_data.client.client_city}")
-        st.write(f"**Province:** {statement_data.client.client_province}")
-        st.write(f"**Postal Code:** {statement_data.client.client_postal_code}")
-        st.write(f"**Country:** {statement_data.client.client_country}")
 
-        # Display account information
-        for account in statement_data.accounts:
-            st.header(f"Account {account.account_id} Information")
-            st.write(f"**Account Type:** {account.account_type.value}")
-            st.write(f"**Account ID:** {account.account_id}")
-            st.write(f"**Account Value:** ${account.account_value:,.2f}")
-            st.write(f"**Cash value:** ${account.cash_balance:,.2f}")
-            st.write(
-                f"**Management Fee Amount:** ${account.management_fee_amount:,.2f}"
-            )
-            st.write(f"**Statement Start Date:** {account.statement_start_date}")
-            st.write(f"**Statement End Date:** {account.statement_end_date}")
-            holdings = pd.DataFrame(
-                [holding.model_dump() for holding in account.holdings]
-            )
-            st.header(f"Account {account.account_id} Holdings")
-            st.table(holdings)
+app.include_router(auth.router)
+app.include_router(user.router)
+app.include_router(document.router)
+app.include_router(prospect.router)
 
+
+# Specific exception handlers
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+    )
+
+
+@app.exception_handler(IntegrityError)
+async def integrity_error_handler(request: Request, exc: IntegrityError):
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": "Integrity error: Email already exists"},
+    )
+
+
+@app.exception_handler(ValidationError)
+async def validation_error_handler(request: Request, exc: ValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": f"Validation error: {exc.errors()}"},
+    )
+
+
+# Global exception handler for unexpected errors
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": f"An unexpected error occurred: {str(exc)}"},
+    )
+
+
+if os.getenv("NESTQ_ENV") != "production":
+    origins = [
+        "http://localhost:3000"  # React app
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 if __name__ == "__main__":
-    main()
+    import uvicorn
+
+    uvicorn.run("main2:app", host="127.0.0.1", port=8000, reload=True)
