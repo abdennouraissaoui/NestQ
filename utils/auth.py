@@ -2,13 +2,12 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated, Optional
 from jose import jwt, JWTError
 from datetime import timedelta, datetime, timezone
-from app.models.database.user import User
+from app.models.database.user_db import User, get_user
 from utils.hash import Hash
 from fastapi import HTTPException, status, Depends
 from app.config import app_config
 from utils.db_connection_manager import get_db
 from sqlalchemy.orm import Session
-from app.models.database.user import get_user
 
 
 SECRET_KEY = app_config.AUTH_SECRET_KEY
