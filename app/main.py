@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
-from app.routers import auth, user, document, prospect
+from app.routers import auth, user, document, prospect, advisor
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
@@ -29,6 +29,7 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(document.router)
 app.include_router(prospect.router)
+app.include_router(advisor.router)
 
 
 # Specific exception handlers
@@ -81,4 +82,4 @@ if os.getenv("NESTQ_ENV") != "production":
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main2:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

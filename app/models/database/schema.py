@@ -152,7 +152,7 @@ class Address(Base):
     __tablename__ = "addresses"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=False)
     unit_number = Column(String(10), nullable=True)
     street_number = Column(String(10), nullable=False)
     street_name = Column(String(100), nullable=False)
@@ -164,8 +164,8 @@ class Address(Base):
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
-    __table_args__ = (Index("ix_addresses_client_id", "client_id"),)
-    client = relationship("Client", back_populates="addresses")
+    __table_args__ = (Index("ix_addresses_prospect_id", "prospect_id"),)
+    prospect = relationship("Prospect", back_populates="addresses")
 
 
 class Holding(Base):
@@ -216,7 +216,7 @@ class Account(Base):
     __tablename__ = "accounts"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=False)
     account_number = Column(String(50), nullable=False, unique=True)
     account_type = Column(Enum(AccountType), nullable=False)
     currency = Column(String(3), nullable=False)
@@ -226,10 +226,10 @@ class Account(Base):
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
-    client = relationship("Client", back_populates="accounts")
+    prospect = relationship("Prospect", back_populates="accounts")
     holdings = relationship("Holding", back_populates="account")
     __table_args__ = (
-        Index("ix_accounts_client_id", "client_id"),
+        Index("ix_accounts_prospect_id", "prospect_id"),
         Index("ix_accounts_account_number", "account_number"),
     )
 
@@ -238,7 +238,7 @@ class Scan(Base):
     __tablename__ = "scans"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=False)
     uploaded_file = Column(String(255), nullable=False)
     page_count = Column(Integer, nullable=False)
     file_name = Column(String(255), nullable=False)
@@ -253,9 +253,9 @@ class Scan(Base):
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
 
-    client = relationship("Client", back_populates="scans")
+    prospect = relationship("Prospect", back_populates="scans")
     __table_args__ = (
-        Index("ix_scans_client_id", "client_id"),
+        Index("ix_scans_prospect_id", "prospect_id"),
         Index("ix_scans_status", "status"),
         Index("ix_scans_ocr_id", "ocr_id"),
     )

@@ -1,5 +1,5 @@
 from app.models.database.schema import User
-from app.models.schemas import UserBase
+from app.models.schemas import UserBase, UserPut
 from sqlalchemy.orm import Session
 from utils.hash import Hash
 from typing import List, Optional
@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError
 from fastapi import HTTPException, status
 from app.models.enums import Role
+from app.models.database import advisor_db
 
 
 user_not_found_exception = HTTPException(
@@ -29,6 +30,9 @@ def create_user(db: Session, request: UserBase) -> Optional[User]:
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
+        # Add the following code:
+        if new_user.role == Role.ADVISOR:
+            advisor_db.create_advisor(db, user_id=new_user.id)
         return new_user
 
     except IntegrityError:
@@ -74,16 +78,10 @@ def get_user(db: Session, id: int) -> Optional[User]:
     return user_data
 
 
-def update_user(db: Session, id: int, request: UserBase) -> User:
+def update_user(db: Session, id: int, request: UserPut) -> User:
     user = get_user(db, id)
     try:
         user.email = request.email
-        if request.role == Role.PROSPECT.value:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Cannot update to role Prospect",
-            )
-        user.role = Role(request.role)
         user.first_name = request.first_name
         user.last_name = request.last_name
         user.phone_number = request.phone_number
