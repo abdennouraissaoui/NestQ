@@ -1,7 +1,3 @@
-"""
-Schemas for the data to be extracted from the financial statements.
-"""
-
 from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator, ValidationInfo
 from app.models.enums import AccountType
@@ -234,3 +230,86 @@ class AdvisorDetailDisplay(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class HoldingDisplay(BaseModel):
+    id: int
+    symbol: Optional[str]
+    description: str
+    quantity: Optional[float]
+    market_value: float
+    currency: str
+
+    class Config:
+        from_attributes = True
+
+
+class AccountListDisplay(BaseModel):
+    id: int
+    account_number: str
+    account_type: AccountType
+    currency: str
+    institution: str
+    created_at: int
+
+    class Config:
+        from_attributes = True
+
+
+class AccountDetailDisplay(BaseModel):
+    id: int
+    account_number: str
+    account_type: AccountType
+    currency: str
+    institution: str
+    created_at: int
+    holdings: List[HoldingDisplay]
+
+    class Config:
+        from_attributes = True
+
+
+class AccountUpdate(BaseModel):
+    account_type: Optional[AccountType]
+    currency: Optional[str]
+    institution: Optional[str]
+
+
+# Add these new schemas to the existing file
+
+
+class AddressPut(BaseModel):
+    unit_number: Optional[str] = Field(
+        None, description="Unit number of the address", example="Suite 200"
+    )
+    street_number: str = Field(
+        ..., description="Street number of the address", example="123"
+    )
+    street_name: str = Field(
+        ..., description="Street name of the address", example="Main Street"
+    )
+    city: str = Field(..., description="City of the address", example="Toronto")
+    state: str = Field(
+        ..., description="State or province of the address", example="Ontario"
+    )
+    postal_code: str = Field(
+        ..., description="Postal code of the address", example="M5V 2T6"
+    )
+    country: str = Field(..., description="Country of the address", example="Canada")
+    prospect_id: int = Field(
+        ..., description="ID of the prospect associated with this address", example=1
+    )
+
+
+class AddressDisplay(AddressPut):
+    id: int = Field(..., description="Unique identifier for the address")
+    created_at: int = Field(..., description="Timestamp when the address was created")
+    updated_at: int = Field(
+        ..., description="Timestamp when the address was last updated"
+    )
+
+    class Config:
+        from_attributes = True
+
+
+# Remove the AddressCreate and AddressUpdate classes
