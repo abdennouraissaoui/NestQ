@@ -1,13 +1,21 @@
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
-from app.routers import auth, user, document, prospect, advisor
+from app.routers import (
+    auth,
+    user,
+    prospect,
+    advisor,
+    account,
+    address,
+)  # Add address here
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 import os
 from app.models.database.schema import Base
 from utils.db_connection_manager import engine
+import time
 
 
 app = FastAPI()
@@ -27,9 +35,10 @@ def health_check():
 
 app.include_router(auth.router)
 app.include_router(user.router)
-app.include_router(document.router)
 app.include_router(prospect.router)
 app.include_router(advisor.router)
+app.include_router(account.router)  # Include the account router
+app.include_router(address.router)  # Add this line
 
 
 # Specific exception handlers
@@ -78,6 +87,16 @@ if os.getenv("NESTQ_ENV") != "production":
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
+
 
 if __name__ == "__main__":
     import uvicorn
