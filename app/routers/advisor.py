@@ -2,10 +2,13 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from utils.auth import get_current_user
-
 from app.models.database import advisor_db
-from app.models.database.schema import User
-from app.models.schemas import AdvisorDisplay, AdvisorDetailDisplay, ProspectDisplay
+from app.models.database.orm_models import User
+from app.models.schemas.advisor_schema import (
+    AdvisorDisplaySchema,
+    AdvisorDetailDisplaySchema,
+)
+from app.models.schemas.prospect_schema import ProspectDisplaySchema
 from utils.db_connection_manager import get_db
 from app.models.enums import Role  # Ensure Role is imported
 
@@ -13,7 +16,9 @@ from app.models.enums import Role  # Ensure Role is imported
 router = APIRouter(prefix="/advisor", tags=["Advisor"])
 
 
-@router.get("/", response_model=List[AdvisorDisplay], status_code=status.HTTP_200_OK)
+@router.get(
+    "/", response_model=List[AdvisorDisplaySchema], status_code=status.HTTP_200_OK
+)
 def get_advisors(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
@@ -28,7 +33,7 @@ def get_advisors(
     firm_id = current_user.firm_id
     advisors = advisor_db.get_advisors_by_firm(db, firm_id)
     advisors_display = [
-        AdvisorDisplay(
+        AdvisorDisplaySchema(
             id=advisor.id,
             first_name=advisor.user.first_name,
             last_name=advisor.user.last_name,
@@ -40,7 +45,9 @@ def get_advisors(
 
 
 @router.get(
-    "/{advisor_id}", response_model=AdvisorDetailDisplay, status_code=status.HTTP_200_OK
+    "/{advisor_id}",
+    response_model=AdvisorDetailDisplaySchema,
+    status_code=status.HTTP_200_OK,
 )
 def get_advisor(
     advisor_id: int,
@@ -65,7 +72,7 @@ def get_advisor(
         )
     # Build the response
     prospects_display = [
-        ProspectDisplay(
+        ProspectDisplaySchema(
             id=prospect.id,
             first_name=prospect.first_name,
             last_name=prospect.last_name,
@@ -74,7 +81,7 @@ def get_advisor(
         )
         for prospect in advisor.user.prospects
     ]
-    return AdvisorDetailDisplay(
+    return AdvisorDetailDisplaySchema(
         id=advisor.id,
         first_name=advisor.user.first_name,
         last_name=advisor.user.last_name,

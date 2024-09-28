@@ -17,7 +17,7 @@ from sqlalchemy import (
     Enum,
     LargeBinary,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, BYTEA
 from sqlalchemy.orm import relationship
 import time
 from app.models.enums import (
@@ -66,16 +66,12 @@ class User(Base):
     referred_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     last_login = Column(BigInteger, nullable=True)
     sign_in_count = Column(Integer, default=0, nullable=False)
-    last_sign_in_at = Column(BigInteger, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     created_by = Column(Integer, nullable=True)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
     firm = relationship("Firm", back_populates="users")
-    prospects = relationship(
-        "Prospect", back_populates="advisor", foreign_keys="Prospect.advisor_id"
-    )
     referred_users = relationship("User", back_populates="referred_by")
     referred_by = relationship(
         "User", back_populates="referred_users", remote_side=[id]
@@ -119,13 +115,14 @@ class Advisor(Base):
     __tablename__ = "advisors"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
     user = relationship("User", back_populates="advisor")
     subscription = relationship("Subscription", back_populates="advisor", uselist=False)
+    prospects = relationship("Prospect", back_populates="advisor")
     __table_args__ = (Index("ix_advisors_user_id", "user_id"),)
 
 
@@ -135,13 +132,13 @@ class Prospect(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
-    advisor_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    advisor_id = Column(Integer, ForeignKey("advisors.id"), nullable=False)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
 
-    advisor = relationship("User", back_populates="prospects")
+    advisor = relationship("Advisor", back_populates="prospects")
     accounts = relationship("Account", back_populates="prospect")
     addresses = relationship("Address", back_populates="prospect")
     scans = relationship("Scan", back_populates="prospect")
@@ -173,7 +170,7 @@ class Holding(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
-    asset_id = Column(Integer, ForeignKey("assets.id"), nullable=False)
+    asset_id = Column(Integer, ForeignKey("assets.id"), nullable=True)
     symbol = Column(String(20), nullable=True)
     description = Column(String(255), nullable=False)
     cusip = Column(String(9), nullable=True)
@@ -234,16 +231,57 @@ class Account(Base):
     )
 
 
+class AssetAllocation(Base):
+    __tablename__ = "asset_allocations"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    scan_id = Column(Integer, ForeignKey("scans.id"), nullable=False)
+    asset_class = Column(String(100), nullable=False)
+    percentage = Column(Float, nullable=False)
+    created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
+    updated_at = Column(
+        BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
+    )
+
+    scan = relationship("Scan", back_populates="asset_allocations")
+
+    __table_args__ = (Index("ix_asset_allocations_scan_id", "scan_id"),)
+
+    def __repr__(self):
+        return f"<AssetAllocation(id={self.id}, scan_id={self.scan_id}, asset_class={self.asset_class}, percentage={self.percentage})>"
+
+
+class Performance(Base):
+    __tablename__ = "performances"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    scan_id = Column(Integer, ForeignKey("scans.id"), nullable=False)
+    period = Column(String(50), nullable=False)
+    return_percentage = Column(Float, nullable=False)
+    benchmark = Column(String(100), nullable=True)
+    benchmark_return_percentage = Column(Float, nullable=True)
+    created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
+    updated_at = Column(
+        BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
+    )
+
+    scan = relationship("Scan", back_populates="performances")
+
+    __table_args__ = (Index("ix_performances_scan_id", "scan_id"),)
+
+    def __repr__(self):
+        return f"<Performance(id={self.id}, scan_id={self.scan_id}, period={self.period}, return_percentage={self.return_percentage})>"
+
+
 class Scan(Base):
     __tablename__ = "scans"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=False)
-    uploaded_file = Column(String(255), nullable=False)
+    uploaded_file = Column(BYTEA, nullable=False)
     page_count = Column(Integer, nullable=False)
     file_name = Column(String(255), nullable=False)
     ocr_source = Column(String(50), nullable=False)
-    ocr_id = Column(String(255), nullable=False)
     status = Column(Enum(ScanStatus), nullable=False)
     ocr_text = Column(Text, nullable=False)
     ocr_text_cleaned = Column(Text, nullable=False)
@@ -254,10 +292,11 @@ class Scan(Base):
     )
 
     prospect = relationship("Prospect", back_populates="scans")
+    asset_allocations = relationship("AssetAllocation", back_populates="scan")
+    performances = relationship("Performance", back_populates="scan")
     __table_args__ = (
         Index("ix_scans_prospect_id", "prospect_id"),
         Index("ix_scans_status", "status"),
-        Index("ix_scans_ocr_id", "ocr_id"),
     )
 
 

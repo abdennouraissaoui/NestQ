@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import List
-from app.models.database.schema import Address, Prospect
-from app.models.schemas import AddressPut
+from app.models.database.orm_models import Address, Prospect
+from app.models.schemas.address_schema import AddressCreateSchema, AddressUpdateSchema
 
 address_not_found_exception = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
@@ -29,7 +29,7 @@ def is_advisor_prospect(db: Session, advisor_id: int, prospect_id: int) -> bool:
     return prospect.advisor_id == advisor_id
 
 
-def create_address(db: Session, address: AddressPut) -> Address:
+def create_address(db: Session, address: AddressCreateSchema) -> Address:
     db_address = Address(**address.dict())
     db.add(db_address)
     db.commit()
@@ -45,7 +45,9 @@ def get_address_by_id(db: Session, address_id: int) -> Address:
     return _get_address_or_raise(db, address_id)
 
 
-def update_address(db: Session, address_id: int, address_update: AddressPut) -> Address:
+def update_address(
+    db: Session, address_id: int, address_update: AddressUpdateSchema
+) -> Address:
     db_address = _get_address_or_raise(db, address_id)
     for field, value in address_update.dict(exclude_unset=True).items():
         setattr(db_address, field, value)

@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 import os
-from app.models.database.schema import Base
+from app.models.database.orm_models import Base
 from utils.db_connection_manager import engine
 import time
 

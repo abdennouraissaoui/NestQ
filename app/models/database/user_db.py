@@ -1,11 +1,11 @@
-from app.models.database.schema import User
-from app.models.schemas import UserBase, UserPut
-from sqlalchemy.orm import Session
-from utils.hash import Hash
 from typing import List, Optional
 from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+from utils.hash import Hash
+from app.models.database.orm_models import User
+from app.models.schemas.user_schema import UserCreateSchema, UserUpdateSchema
 from app.models.enums import Role
 from app.models.database import advisor_db
 
@@ -16,7 +16,7 @@ user_not_found_exception = HTTPException(
 )
 
 
-def create_user(db: Session, request: UserBase) -> Optional[User]:
+def create_user(db: Session, request: UserCreateSchema) -> Optional[User]:
     try:
         new_user = User(
             email=request.email,
@@ -78,7 +78,7 @@ def get_user(db: Session, id: int) -> Optional[User]:
     return user_data
 
 
-def update_user(db: Session, id: int, request: UserPut) -> User:
+def update_user(db: Session, id: int, request: UserUpdateSchema) -> User:
     user = get_user(db, id)
     try:
         user.email = request.email

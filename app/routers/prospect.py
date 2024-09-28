@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from app.models.schemas import (
-    Prospect as ProspectSchema,
-    ProspectDisplay,
-    ProspectDetailDisplay,
-    ProspectPut,
+from app.models.schemas.prospect_schema import (
+    ProspectCreateSchema,
+    ProspectDisplaySchema,
+    ProspectDetailDisplaySchema,
+    ProspectUpdateSchema,
 )
 from app.models.database.prospect_db import (
     create_prospect,
@@ -14,7 +14,6 @@ from app.models.database.prospect_db import (
     update_prospect,
     delete_prospect,
 )
-from app.models.database.document_db import get_documents_by_prospect_id
 from utils.auth import get_current_user, get_db
 from app.models.database.user_db import User
 from app.models.enums import Role
@@ -35,13 +34,13 @@ def get_prospect_or_404(prospect_id: int, db: Session, current_user: User):
 
 @router.post(
     "/",
-    response_model=ProspectDisplay,
+    response_model=ProspectDisplaySchema,
     summary="Create a new prospect",
     description="Create a new prospect associated with the current advisor.",
     response_description="The created prospect.",
 )
 def create_prospect_route(
-    prospect: ProspectPut,
+    prospect: ProspectCreateSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -51,19 +50,18 @@ def create_prospect_route(
         )
     if not current_user.advisor:
         raise HTTPException(
-            status_code=400, detail="Current user is not associated with an advisor"
+            status_code=400,
+            detail="Current user is not associated with an advisor",
         )
-    prospect_data = ProspectSchema(
-        first_name=prospect.first_name,
-        last_name=prospect.last_name,
-        advisor_id=current_user.advisor.id,
+    prospect_data = ProspectCreateSchema(
+        first_name=prospect.first_name, last_name=prospect.last_name
     )
-    return create_prospect(db, prospect_data)
+    return create_prospect(db, prospect_data, advisor_id=current_user.advisor.id)
 
 
 @router.get(
     "/",
-    response_model=List[ProspectDisplay],
+    response_model=List[ProspectDisplaySchema],
     summary="Get a list of prospects",
     description="Retrieve a list of prospects associated with the current advisor.",
     response_description="A list of prospects.",
@@ -72,13 +70,15 @@ def get_prospects_route(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     if current_user.role != Role.ADVISOR:
-        raise HTTPException(status_code=403, detail="Only advisors can view prospects")
+        raise HTTPException(
+            status_code=403, detail="Only advisors can view prospects"
+        )
     return get_prospects_by_advisor(db, current_user.advisor.id)
 
 
 @router.get(
     "/{prospect_id}",
-    response_model=ProspectDetailDisplay,
+    response_model=ProspectDetailDisplaySchema,
     summary="Get a prospect by ID",
     description="Retrieve a prospect by ID along with their associated documents.",
     response_description="The retrieved prospect with documents.",
@@ -90,7 +90,7 @@ def get_prospect_route(
 ):
     prospect = get_prospect_or_404(prospect_id, db, current_user)
     documents = get_documents_by_prospect_id(db, prospect_id)
-    return ProspectDetailDisplay(
+    return ProspectDetailDisplaySchema(
         first_name=prospect.first_name,
         last_name=prospect.last_name,
         documents=[doc.filename for doc in documents],
@@ -99,14 +99,14 @@ def get_prospect_route(
 
 @router.put(
     "/{prospect_id}",
-    response_model=ProspectDetailDisplay,
+    response_model=ProspectDetailDisplaySchema,
     summary="Update a prospect by ID",
     description="Update the details of a prospect by their ID.",
     response_description="The updated prospect.",
 )
 def update_prospect_route(
     prospect_id: int,
-    prospect_update: ProspectPut,
+    prospect_update: ProspectUpdateSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -116,7 +116,7 @@ def update_prospect_route(
 
 @router.delete(
     "/{prospect_id}",
-    response_model=ProspectDisplay,
+    response_model=ProspectDisplaySchema,
     summary="Delete a prospect by ID",
     description="Delete a prospect by their ID.",
     response_description="The deleted prospect.",

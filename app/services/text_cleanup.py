@@ -90,13 +90,17 @@ def remove_informational_text(markdown_text: str) -> str:
     return cleaned_text
 
 
-def remove_disclaimer_pages(input_file_path: str) -> str:
+def remove_disclaimer_pages(input_base64: str) -> str:
     """
-    Remove disclaimer pages from the input file (if they exist)
+    Remove disclaimer pages from the input base64-encoded PDF (if they exist)
     """
     classifier = StatementExcerptClassifier(classification_level="page")
-    # Open the PDF file
-    pdf = fitz.open(input_file_path)
+
+    # Decode base64 to PDF bytes
+    pdf_bytes = base64.b64decode(input_base64)
+
+    # Open the PDF from bytes
+    pdf = fitz.open(stream=pdf_bytes, filetype="pdf")
 
     # Create a new PDF to store relevant pages
     new_pdf = fitz.open()
@@ -109,8 +113,8 @@ def remove_disclaimer_pages(input_file_path: str) -> str:
     # Convert the new PDF to base64
     buffer = BytesIO()
     new_pdf.save(buffer)
-    pdf_bytes = buffer.getvalue()
-    base64_pdf = base64.b64encode(pdf_bytes).decode()
+    new_pdf_bytes = buffer.getvalue()
+    base64_pdf = base64.b64encode(new_pdf_bytes).decode()
 
     # Close both PDFs
     pdf.close()
@@ -119,12 +123,12 @@ def remove_disclaimer_pages(input_file_path: str) -> str:
     return base64_pdf
 
 
-def get_llm_ready_text(input_file_path: str) -> str:
+def get_llm_ready_text(input_base64: str) -> str:
     """
     Extracts relevant text from a statement and returns a string that is ready for an LLM.
     """
     # Remove disclaimer pages from the input file (if they exist)
-    cleaned_doc_base64 = remove_disclaimer_pages(input_file_path)
+    cleaned_doc_base64 = remove_disclaimer_pages(input_base64)
 
     # Get the markdown formatted text from the document
     ocr_factory = OcrFactory("document-intelligence")
@@ -135,15 +139,3 @@ def get_llm_ready_text(input_file_path: str) -> str:
     context: str = remove_informational_text(markdown_text)
 
     return context
-
-
-if __name__ == "__main__":
-    import time
-
-    start_time = time.time()
-    result = get_llm_ready_text("./model/data/sample_statements/CI.pdf")
-    end_time = time.time()
-
-    execution_time = end_time - start_time
-    print(f"Execution time: {execution_time:.2f} seconds")
-    print(result)

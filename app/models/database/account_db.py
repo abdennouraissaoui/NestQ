@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from typing import List
-from app.models.database.schema import Account, Prospect, Holding
-from app.models.schemas import AccountUpdate
+from app.models.database.orm_models import Account, Prospect, Holding
+from app.models.schemas.account_schema import AccountUpdateSchema
 
 account_not_found_exception = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
@@ -52,7 +52,7 @@ def get_account_by_id(db: Session, account_id: int) -> Account:
 
 
 def update_account(
-    db: Session, account_id: int, account_update: AccountUpdate
+    db: Session, account_id: int, account_update: AccountUpdateSchema
 ) -> Account:
     account = _get_account_or_raise(db, account_id)
     for field, value in account_update.dict(exclude_unset=True).items():

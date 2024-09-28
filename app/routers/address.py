@@ -3,8 +3,11 @@ from sqlalchemy.orm import Session
 from typing import List
 from utils.auth import get_current_user
 from app.models.database import address_db
-from app.models.database.schema import User
-from app.models.schemas import AddressDisplay, AddressPut
+from app.models.database.orm_models import User
+from app.models.schemas.address_schema import (
+    AddressDisplaySchema,
+    AddressUpdateSchema,
+)
 from utils.db_connection_manager import get_db
 
 router = APIRouter(
@@ -15,14 +18,14 @@ router = APIRouter(
 
 @router.post(
     "/",
-    response_model=AddressDisplay,
+    response_model=AddressDisplaySchema,
     status_code=status.HTTP_201_CREATED,
     summary="Create a new address",
     description="Create a new address for a prospect.",
     response_description="The created address.",
 )
 def create_address(
-    address: AddressPut,
+    address: AddressUpdateSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -38,7 +41,7 @@ def create_address(
 
 @router.get(
     "/prospect/{prospect_id}",
-    response_model=List[AddressDisplay],
+    response_model=List[AddressDisplaySchema],
     summary="Get addresses by prospect",
     description="Retrieve all addresses for a specific prospect.",
     response_description="A list of addresses associated with the prospect.",
@@ -48,7 +51,9 @@ def get_addresses_by_prospect(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if not address_db.is_advisor_prospect(db, current_user.advisor.id, prospect_id):
+    if not address_db.is_advisor_prospect(
+        db, current_user.advisor.id, prospect_id
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to access addresses for this prospect",
@@ -58,7 +63,7 @@ def get_addresses_by_prospect(
 
 @router.get(
     "/{address_id}",
-    response_model=AddressDisplay,
+    response_model=AddressDisplaySchema,
     summary="Get an address by ID",
     description="Retrieve a specific address by its ID.",
     response_description="The requested address details.",
@@ -81,14 +86,14 @@ def get_address(
 
 @router.put(
     "/{address_id}",
-    response_model=AddressDisplay,
+    response_model=AddressDisplaySchema,
     summary="Update an address",
     description="Update an existing address.",
     response_description="The updated address details.",
 )
 def update_address(
     address_id: int,
-    address_update: AddressPut,
+    address_update: AddressUpdateSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

@@ -29,6 +29,11 @@ def authenticate_user(email: str, password: str, db) -> Optional[User]:
         raise credentials_exception
     if not Hash.verify(hashed_password=user.password, plain_password=password):
         raise credentials_exception
+    # Update last_login and increment sign_in_count
+    current_time = int(datetime.now(timezone.utc).timestamp())
+    user.last_login = current_time
+    user.sign_in_count += 1
+    db.commit()
     return user
 
 

@@ -2,23 +2,18 @@
 Orchestrates the extraction of holdings from a financial statement.
 """
 
-from app.services.text_cleanup import get_llm_ready_text
 from app.services.prompts import INVESTMENT_STATEMENT_DATA_EXTRACTION
 from app.models.schemas import FinancialStatement
 from app.services.llm_factory import LlmFactory
 
 
 class StatementExtractor:
-    def __init__(self, input_file_path: str, llm_provider: str = "azure-openai"):
-        self.input_file_path = input_file_path
+    def __init__(self, llm_provider: str = "azure-openai"):
         self.llm_factory = LlmFactory(llm_provider)
 
-    def extract_financial_statement(self) -> FinancialStatement:
+    def extract_financial_statement(self, llm_ready_text: str) -> FinancialStatement:
         try:
-            # Step 1: Get LLM-ready text
-            llm_ready_text = get_llm_ready_text(self.input_file_path)
-
-            # Step 2: Prepare the prompt
+            # Step 1: Prepare the prompt
             messages = [
                 {
                     "role": "system",

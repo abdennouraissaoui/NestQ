@@ -1,7 +1,14 @@
-from sqlalchemy.orm import Session
-from app.models.database.schema import Advisor, User, Prospect
-from fastapi import HTTPException, status
 from typing import List
+
+from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.models.database.orm_models import Advisor, User
+from app.models.enums import Role  # Import the Role enum
+from app.models.schemas.advisor_schema import (
+    AdvisorDetailDisplaySchema,
+    AdvisorDisplaySchema,
+)
 
 advisor_not_found_exception = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
@@ -25,12 +32,25 @@ def get_advisor(db: Session, advisor_id: int) -> Advisor:
     return _get_advisor_or_raise(db, advisor_id)
 
 
-def get_advisors_by_firm(db: Session, firm_id: int) -> List[Advisor]:
+def get_advisors_by_firm(db: Session, firm_id: int, user_role: Role) -> List[Advisor]:
     """
     Retrieve all advisors belonging to a specific firm.
+    Only allows access for users with 'Admin' role.
     """
-    advisors = db.query(Advisor).join(User).filter(User.firm_id == firm_id).all()
-    return advisors
+    if user_role != Role.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Admin users can access this information",
+        )
+
+    return db.query(Advisor).join(User).filter(User.firm_id == firm_id).all()
+
+
+def get_advisor_detail(db: Session, advisor_id: int) -> Advisor:
+    """
+    Retrieve an advisor by ID with detailed information.
+    """
+    return _get_advisor_or_raise(db, advisor_id)
 
 
 def create_advisor(db: Session, user_id: int) -> Advisor:

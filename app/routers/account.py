@@ -2,10 +2,13 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from utils.auth import get_current_user
-
 from app.models.database import account_db
-from app.models.database.schema import User, Holding
-from app.models.schemas import AccountListDisplay, AccountDetailDisplay, AccountUpdate
+from app.models.database.orm_models import User, Holding
+from app.models.schemas.account_schema import (
+    AccountDisplaySchema,
+    AccountDetailDisplaySchema,
+    AccountUpdateSchema,
+)
 from utils.db_connection_manager import get_db
 
 
@@ -17,7 +20,7 @@ router = APIRouter(
 
 @router.get(
     "/prospect/{prospect_id}",
-    response_model=List[AccountListDisplay],
+    response_model=List[AccountDisplaySchema],
     status_code=status.HTTP_200_OK,
 )
 def get_accounts_by_prospect(
@@ -29,7 +32,9 @@ def get_accounts_by_prospect(
     Get a list of accounts for a given prospect.
     """
     # Authorization checks
-    if not account_db.is_advisor_prospect(db, current_user.advisor.id, prospect_id):
+    if not account_db.is_advisor_prospect(
+        db, current_user.advisor.id, prospect_id
+    ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to access these accounts",
@@ -41,7 +46,7 @@ def get_accounts_by_prospect(
 
 @router.get(
     "/{account_id}",
-    response_model=AccountDetailDisplay,
+    response_model=AccountDetailDisplaySchema,
     status_code=status.HTTP_200_OK,
 )
 def get_account_by_id(
@@ -66,12 +71,12 @@ def get_account_by_id(
 
 @router.put(
     "/{account_id}",
-    response_model=AccountDetailDisplay,
+    response_model=AccountDetailDisplaySchema,
     status_code=status.HTTP_202_ACCEPTED,
 )
 def update_account(
     account_id: int,
-    account_update: AccountUpdate,
+    account_update: AccountUpdateSchema,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
