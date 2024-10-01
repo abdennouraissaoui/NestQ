@@ -60,11 +60,11 @@ class SubscriptionStatus(Enum):
     PAUSED = "paused"
 
 
-class ScanStatus(Enum):
-    PENDING = "Pending"
-    PROCESSING = "Processing"
-    COMPLETED = "Completed"
-    FAILED = "Failed"
+class ScanStatus(str, Enum):
+    UPLOADED = "uploaded"
+    PROCESSING = "processing"
+    PROCESSED = "processed"
+    ERROR = "error"
 
 
 class Role(Enum):
