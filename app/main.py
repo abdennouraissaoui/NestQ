@@ -8,6 +8,8 @@ from app.routers import (
     advisor,
     account,
     address,
+    holding,
+    scan,
 )  # Add address here
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,6 +41,8 @@ app.include_router(prospect.router)
 app.include_router(advisor.router)
 app.include_router(account.router)  # Include the account router
 app.include_router(address.router)  # Add this line
+app.include_router(scan.router)
+app.include_router(holding.router)
 
 
 # Specific exception handlers
