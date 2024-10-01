@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.models.schemas.prospect_schema import (
@@ -14,9 +14,11 @@ from app.models.database.prospect_db import (
     update_prospect,
     delete_prospect,
 )
-from utils.auth import get_current_user, get_db
+from utils.auth import get_current_user
+from utils.db_connection_manager import get_db
 from app.models.database.user_db import User
 from app.models.enums import Role
+from app.models.database.scan_db import get_scans_by_prospect_id
 
 router = APIRouter(prefix="/prospects", tags=["Prospects"])
 
@@ -89,11 +91,11 @@ def get_prospect_route(
     current_user: User = Depends(get_current_user),
 ):
     prospect = get_prospect_or_404(prospect_id, db, current_user)
-    documents = get_documents_by_prospect_id(db, prospect_id)
+    scans = get_scans_by_prospect_id(db, prospect_id)
     return ProspectDetailDisplaySchema(
         first_name=prospect.first_name,
         last_name=prospect.last_name,
-        documents=[doc.filename for doc in documents],
+        scans=[doc.filename for doc in scans],
     )
 
 
@@ -116,10 +118,10 @@ def update_prospect_route(
 
 @router.delete(
     "/{prospect_id}",
-    response_model=ProspectDisplaySchema,
     summary="Delete a prospect by ID",
     description="Delete a prospect by their ID.",
     response_description="The deleted prospect.",
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_prospect_route(
     prospect_id: int,
@@ -127,4 +129,4 @@ def delete_prospect_route(
     current_user: User = Depends(get_current_user),
 ):
     get_prospect_or_404(prospect_id, db, current_user)
-    return delete_prospect(db, prospect_id)
+    delete_prospect(db, prospect_id)

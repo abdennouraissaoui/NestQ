@@ -92,9 +92,9 @@ def update_user(
 
 @router.delete(
     "/{id}",
-    response_model=UserDisplaySchema,
     summary="Delete a user",
     description="Delete a user by their ID. This endpoint is accessible only to users with the 'ADMIN' role.",
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete(
     id: int,
@@ -103,7 +103,7 @@ def delete(
 ):
     user = user_db.get_user(db, id)
     check_admin_and_firm(current_user, user.firm_id)
-    return user_db.delete_user(db, id)
+    user_db.delete_user(db, id)
 
 
 @router.get(

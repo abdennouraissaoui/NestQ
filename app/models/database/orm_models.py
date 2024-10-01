@@ -51,6 +51,9 @@ class Firm(Base):
     enabled = Column(Boolean, default=True, nullable=False)
     users = relationship("User", back_populates="firm")
 
+    def __repr__(self):
+        return f"""<Firm(id={self.id}, name='{self.name}')>"""
+
 
 class User(Base):
     __tablename__ = "users"
@@ -81,6 +84,9 @@ class User(Base):
 
     __table_args__ = (Index("ix_user_firm_id", "firm_id"),)
 
+    def __repr__(self):
+        return f"""<User(id={self.id}, email='{self.email}', role={self.role})>"""
+
 
 class JSONType(TypeDecorator):
     impl = TEXT
@@ -110,6 +116,9 @@ class AuditLog(Base):
         Index("ix_audit_log_timestamp", "timestamp"),
     )
 
+    def __repr__(self):
+        return f"""<AuditLog(id={self.id}, table_name='{self.table_name}', action={self.action})>"""
+
 
 class Advisor(Base):
     __tablename__ = "advisors"
@@ -121,9 +130,14 @@ class Advisor(Base):
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
     user = relationship("User", back_populates="advisor")
-    subscription = relationship("Subscription", back_populates="advisor", uselist=False)
+    subscription = relationship(
+        "Subscription", back_populates="advisor", uselist=False
+    )
     prospects = relationship("Prospect", back_populates="advisor")
     __table_args__ = (Index("ix_advisors_user_id", "user_id"),)
+
+    def __repr__(self):
+        return f"""<Advisor(id={self.id}, user_id={self.user_id})>"""
 
 
 class Prospect(Base):
@@ -144,6 +158,9 @@ class Prospect(Base):
     scans = relationship("Scan", back_populates="prospect")
     __table_args__ = (Index("ix_prospects_advisor_id", "advisor_id"),)
 
+    def __repr__(self):
+        return f"""<Prospect(id={self.id}, first_name='{self.first_name}', last_name='{self.last_name}')>"""
+
 
 class Address(Base):
     __tablename__ = "addresses"
@@ -163,6 +180,9 @@ class Address(Base):
     )
     __table_args__ = (Index("ix_addresses_prospect_id", "prospect_id"),)
     prospect = relationship("Prospect", back_populates="addresses")
+
+    def __repr__(self):
+        return f"""<Address(id={self.id}, prospect_id={self.prospect_id}, city='{self.city}')>"""
 
 
 class Holding(Base):
@@ -193,6 +213,9 @@ class Holding(Base):
         Index("ix_holdings_cusip", "cusip"),
     )
 
+    def __repr__(self):
+        return f"""<Holding(id={self.id}, account_id={self.account_id}, symbol='{self.symbol}')>"""
+
 
 class Asset(Base):
     __tablename__ = "assets"
@@ -207,6 +230,9 @@ class Asset(Base):
     )
 
     holdings = relationship("Holding", back_populates="asset")
+
+    def __repr__(self):
+        return f"""<Asset(id={self.id}, symbol='{self.symbol}', name='{self.name}')>"""
 
 
 class Account(Base):
@@ -230,6 +256,10 @@ class Account(Base):
         Index("ix_accounts_account_number", "account_number"),
     )
 
+    def __repr__(self):
+        return f"""<Account(id={self.id}, prospect_id={self.prospect_id},
+    account_number={self.account_number}, account_type={self.account_type}, institution={self.institution})>"""
+
 
 class AssetAllocation(Base):
     __tablename__ = "asset_allocations"
@@ -248,7 +278,8 @@ class AssetAllocation(Base):
     __table_args__ = (Index("ix_asset_allocations_scan_id", "scan_id"),)
 
     def __repr__(self):
-        return f"<AssetAllocation(id={self.id}, scan_id={self.scan_id}, asset_class={self.asset_class}, percentage={self.percentage})>"
+        return f"""<AssetAllocation(id={self.id}, scan_id={self.scan_id},
+    asset_class={self.asset_class}, percentage={self.percentage})>"""
 
 
 class Performance(Base):
@@ -270,7 +301,8 @@ class Performance(Base):
     __table_args__ = (Index("ix_performances_scan_id", "scan_id"),)
 
     def __repr__(self):
-        return f"<Performance(id={self.id}, scan_id={self.scan_id}, period={self.period}, return_percentage={self.return_percentage})>"
+        return f"""<Performance(id={self.id}, scan_id={self.scan_id},
+    period={self.period}, return_percentage={self.return_percentage})>"""
 
 
 class Scan(Base):
@@ -282,6 +314,7 @@ class Scan(Base):
     page_count = Column(Integer, nullable=False)
     file_name = Column(String(255), nullable=False)
     ocr_source = Column(String(50), nullable=False)
+    llm_source = Column(String(50), nullable=False)  # Added field for LLM source
     status = Column(Enum(ScanStatus), nullable=False)
     ocr_text = Column(Text, nullable=False)
     ocr_text_cleaned = Column(Text, nullable=False)
@@ -299,13 +332,18 @@ class Scan(Base):
         Index("ix_scans_status", "status"),
     )
 
+    def __repr__(self):
+        return f"""<Scan(id={self.id}, prospect_id={self.prospect_id}, status={self.status})>"""
+
 
 class Subscription(Base):
     # https://courses.bigbinaryacademy.com/handling-stripe-subscriptions/designing-database-for-subscription/
     __tablename__ = "subscriptions"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    advisor_id = Column(Integer, ForeignKey("advisors.id"), nullable=False, unique=True)
+    advisor_id = Column(
+        Integer, ForeignKey("advisors.id"), nullable=False, unique=True
+    )
     stripe_subscription_id = Column(String(255), unique=True, nullable=False)
     status = Column(Enum(SubscriptionStatus), nullable=False)
     tier = Column(Enum(SubscriptionTier), nullable=False)
@@ -338,7 +376,9 @@ class Price(Base):
     __tablename__ = "prices"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    subscription_id = Column(Integer, ForeignKey("subscriptions.id"), nullable=False)
+    subscription_id = Column(
+        Integer, ForeignKey("subscriptions.id"), nullable=False
+    )
     stripe_price_id = Column(String(255), unique=True, nullable=False)
     stripe_product_id = Column(String(255), nullable=False)
     amount = Column(Integer, nullable=False)
@@ -371,7 +411,8 @@ class WebhookEvent(Base):
     data = Column(JSONType, nullable=False)
 
     def __repr__(self):
-        return f"<WebhookEvent(id={self.id}, stripe_event_id={self.stripe_event_id}, event_type={self.event_type}, processed={self.processed})>"
+        return f"""<WebhookEvent(id={self.id}, stripe_event_id={self.stripe_event_id},
+    event_type={self.event_type}, processed={self.processed})>"""
 
 
 # Create tables in the database

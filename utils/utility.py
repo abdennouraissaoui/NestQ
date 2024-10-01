@@ -3,7 +3,6 @@ import os
 import base64
 import pyperclip
 import pandas as pd
-from app.models.schemas import FinancialStatement
 from datetime import datetime, timezone
 import pytz
 import re
@@ -48,58 +47,6 @@ def parse_di_table(table):
         data.append(row_data)
     df = pd.DataFrame(data[1:], columns=data[0])
     return df
-
-
-def output_to_excel(statement_data: FinancialStatement):
-    # Create a Pandas Excel writer using XlsxWriter as the engine
-    # Random file name
-    file_name = "output.xlsx"
-    with pd.ExcelWriter(file_name, engine="xlsxwriter") as writer:
-        # Client Information
-        client_info = {
-            "First Name": statement_data.client.first_name,
-            "Last Name": statement_data.client.last_name,
-            "Unit Number": statement_data.client.client_unit_number,
-            "Street Number": statement_data.client.client_street_number,
-            "Street Name": statement_data.client.client_street_name,
-            "City": statement_data.client.client_city,
-            "Province": statement_data.client.client_province,
-            "Postal Code": statement_data.client.client_postal_code,
-            "Country": statement_data.client.client_country,
-        }
-        client_df = pd.DataFrame(list(client_info.items()), columns=["Field", "Value"])
-        client_df.to_excel(writer, sheet_name="Client Information", index=False)
-
-        # Account Information
-        for account in statement_data.accounts:
-            account_info = {
-                "Account Type": account.account_type.value,
-                "Account ID": account.account_id,
-                "Account Value": f"${account.account_value:,.2f}",
-                "Cash value": f"${account.cash_balance:,.2f}",
-                "Management Fee Amount": f"${account.management_fee_amount:,.2f}",
-                "Estimated MER": f"{account.management_fee_amount / account.account_value * 100 * 12:.2f}%",
-                "Statement Start Date": account.statement_start_date,
-                "Statement End Date": account.statement_end_date,
-            }
-            account_df = pd.DataFrame(
-                list(account_info.items()), columns=["Field", "Value"]
-            )
-            account_df.to_excel(
-                writer, sheet_name=f"{account.account_id}_info", index=False
-            )
-
-            # Account Holdings
-            holdings = pd.DataFrame(
-                [holding.model_dump() for holding in account.holdings]
-            )
-            # combined_df = pd.concat([account_df, pd.DataFrame([[]]), holdings], ignore_index=True)
-
-            holdings.to_excel(
-                writer, sheet_name=f"{account.account_id}_holdings", index=False
-            )
-
-    print(f"Data exported to {file_name}")
 
 
 def epoch_to_utc(epoch_time):

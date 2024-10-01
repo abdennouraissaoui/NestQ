@@ -123,19 +123,60 @@ def remove_disclaimer_pages(input_base64: str) -> str:
     return base64_pdf
 
 
-def get_llm_ready_text(input_base64: str) -> str:
-    """
-    Extracts relevant text from a statement and returns a string that is ready for an LLM.
-    """
-    # Remove disclaimer pages from the input file (if they exist)
+# def get_llm_ready_text(input_base64: str) -> str:
+#     """
+#     Extracts relevant text from a statement and returns a string that is ready for an LLM.
+#     """
+#     # Remove disclaimer pages from the input file (if they exist)
+#     cleaned_doc_base64 = remove_disclaimer_pages(input_base64)
+
+#     # Get the markdown formatted text from the document
+#     ocr_factory = OcrFactory("document-intelligence")
+#     result = ocr_factory.get_document_analysis(cleaned_doc_base64)
+#     markdown_text = clean_markdown_text(result.content)
+
+#     # clean up the markdown formatted text by removing the standard disclaimer texts
+#     context: str = remove_informational_text(markdown_text)
+
+#     return context
+
+
+if __name__ == "__main__":
+    from utils.utility import load_file_as_base64
+    from app.services.statement_extractor import StatementExtractor
+    from app.models.schemas.account_schema import AccountCreateSchema
+
+    ocr_factory = OcrFactory("document-intelligence")
+    extractor = StatementExtractor(llm_provider="azure-openai")
+
+    file_path = "./model/data/sample_statements/CI.pdf"
+    # Load the PDF file as base64
+    input_base64 = load_file_as_base64(file_path)
+
+    # Process the PDF and get LLM-ready text
     cleaned_doc_base64 = remove_disclaimer_pages(input_base64)
 
     # Get the markdown formatted text from the document
-    ocr_factory = OcrFactory("document-intelligence")
     result = ocr_factory.get_document_analysis(cleaned_doc_base64)
     markdown_text = clean_markdown_text(result.content)
 
     # clean up the markdown formatted text by removing the standard disclaimer texts
-    context: str = remove_informational_text(markdown_text)
+    llm_ready_text: str = remove_informational_text(markdown_text)
+    accounts: list[AccountCreateSchema] = extractor.extract_financial_statement(
+        llm_ready_text
+    )
+    # Print a preview of the result
+    print("LLM-ready text preview:")
+    print(
+        llm_ready_text[:500] + "..."
+        if len(llm_ready_text) > 500
+        else llm_ready_text
+    )
 
-    return context
+    # Optionally, save the result to a file
+    with open("llm_ready_text.txt", "w", encoding="utf-8") as output_file:
+        output_file.write(llm_ready_text)
+    print("\nFull text has been saved to 'llm_ready_text.txt'")
+
+    financial_statement = extractor.extract_financial_statement(llm_ready_text)
+    print(financial_statement)

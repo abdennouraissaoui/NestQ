@@ -5,16 +5,33 @@ from .address_schema import AddressCreateSchema, AddressDisplaySchema
 
 
 class ProspectBaseSchema(BaseModel):
-    first_name: Optional[str] = Field(description="First name of the prospect")
-    last_name: Optional[str] = Field(description="Last name of the prospect")
+    first_name: Optional[str] = Field(
+        description="First name of the prospect", example="John"
+    )
+    last_name: Optional[str] = Field(
+        description="Last name of the prospect", example="Doe"
+    )
 
 
 class ProspectCreateSchema(ProspectBaseSchema):
     addresses: List[AddressCreateSchema] = Field(
-        description="List of addresses for the prospect"
+        description="List of addresses for the prospect",
+        example=[
+            {
+                "street_number": "123",
+                "street_name": "Main St",
+                "city": "Toronto",
+                "state": "ON",
+                "postal_code": "M5V 2T6",
+                "country": "Canada",
+            }
+        ],
     )
     accounts: List[AccountCreateSchema] = Field(
-        description="List of accounts for the prospect"
+        description="List of accounts for the prospect",
+        example=[
+            {"account_id": "ACC123", "account_type": "Savings", "currency": "CAD"}
+        ],
     )
 
 
@@ -33,15 +50,28 @@ class ProspectDisplaySchema(ProspectBaseSchema):
 
 
 class ProspectDetailDisplaySchema(ProspectDisplaySchema):
-    documents: List[str] = Field(
+    scans: List[str] = Field(
         description="List of document filenames associated with the prospect",
         example=["doc1.pdf", "doc2.pdf"],
     )
     addresses: List[AddressDisplaySchema] = Field(
-        description="List of addresses for the prospect"
+        description="List of addresses for the prospect",
+        example=[
+            {
+                "street_number": "123",
+                "street_name": "Main St",
+                "city": "Toronto",
+                "state": "ON",
+                "postal_code": "M5V 2T6",
+                "country": "Canada",
+            }
+        ],
     )
     accounts: List[AccountDisplaySchema] = Field(
-        description="List of accounts for the prospect"
+        description="List of accounts for the prospect",
+        example=[
+            {"account_id": "ACC123", "account_type": "Savings", "currency": "CAD"}
+        ],
     )
 
 

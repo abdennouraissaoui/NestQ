@@ -19,20 +19,32 @@ class AddressBaseSchema(BaseModel):
     postal_code: str = Field(
         ..., description="Postal code of the address", example="M5V 2T6"
     )
-    country: str = Field(..., description="Country of the address", example="Canada")
+    country: str = Field(
+        ..., description="Country of the address", example="Canada"
+    )
 
 
 class AddressCreateSchema(AddressBaseSchema):
     prospect_id: int = Field(
-        ..., description="ID of the prospect associated with this address", example=1
+        ...,
+        description="ID of the prospect associated with this address",
+        example=1,
     )
 
 
 class AddressDisplaySchema(AddressBaseSchema):
-    id: int = Field(..., description="Unique identifier for the address")
-    created_at: int = Field(..., description="Timestamp when the address was created")
+    id: int = Field(
+        ..., description="Unique identifier for the address", example=1
+    )
+    created_at: int = Field(
+        ...,
+        description="Timestamp when the address was created",
+        example=1622547800,
+    )
     updated_at: int = Field(
-        ..., description="Timestamp when the address was last updated"
+        ...,
+        description="Timestamp when the address was last updated",
+        example=1622547900,
     )
 
     class Config:
@@ -41,3 +53,12 @@ class AddressDisplaySchema(AddressBaseSchema):
 
 class AddressUpdateSchema(AddressBaseSchema):
     pass
+
+
+class AddressDetailDisplaySchema(AddressDisplaySchema):
+    created_at: int = Field(
+        ..., description="Timestamp when the address was created"
+    )
+    updated_at: int = Field(
+        ..., description="Timestamp when the address was last updated"
+    )

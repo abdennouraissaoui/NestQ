@@ -44,7 +44,9 @@ def visualize_feature_importance(X, y):
     feature_importance = pd.DataFrame(
         {"feature": X.columns, "importance": rf.feature_importances_}
     )
-    feature_importance = feature_importance.sort_values("importance", ascending=False)
+    feature_importance = feature_importance.sort_values(
+        "importance", ascending=False
+    )
 
     plt.figure(figsize=(10, 6))
     plt.barh(feature_importance["feature"], feature_importance["importance"])
@@ -61,7 +63,9 @@ def train_and_evaluate_model(X, y, model_name):
         X, y, test_size=0.2, random_state=42
     )
 
-    pipeline = Pipeline([("scaler", StandardScaler()), ("svm", SVC(random_state=42))])
+    pipeline = Pipeline(
+        [("scaler", StandardScaler()), ("svm", SVC(random_state=42))]
+    )
 
     param_grid = [
         {
@@ -117,7 +121,9 @@ def main():
     # train_and_evaluate_model(X_page, y_page, "page_relevance")
 
     # excerpt relevance model
-    excerpt_data = load_data(r"./model/data/excerpt_relevance_classification_data.csv")
+    excerpt_data = load_data(
+        r"./model/data/excerpt_relevance_classification_data.csv"
+    )
     excerpt_features = extract_features(excerpt_data, excerptFeatureExtractor)
     y_excerpt = excerpt_features["label"]
     X_excerpt = excerpt_features.drop(["label"], axis=1)

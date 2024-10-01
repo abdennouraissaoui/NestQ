@@ -113,7 +113,6 @@ def update_address(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an address",
     description="Delete an existing address.",
-    response_description="No content, address successfully deleted.",
 )
 def delete_address(
     address_id: int,
