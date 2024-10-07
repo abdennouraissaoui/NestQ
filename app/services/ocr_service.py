@@ -46,17 +46,24 @@ class OcrFactory:
 
 
 if __name__ == "__main__":
-    from app.utils.utility import load_file_as_base64
+    import base64
 
-    # Initialize the OcrFactory with the document-intelligence provider
     ocr_factory = OcrFactory("document-intelligence")
 
     # Load a sample PDF file as base64
-    sample_file_path = "./data/sample_statements/IG.pdf"
-    sample_base64 = load_file_as_base64(sample_file_path)
+    sample_file_path = "./model/data/sample_statements/bmo.pdf"
+    with open(sample_file_path, "rb") as file:
+        sample_base64 = base64.b64encode(file.read()).decode("utf-8")
 
     # Get document analysis
     result = ocr_factory.get_document_analysis(sample_base64)
+
+    # Process the result
+    print("Document analysis completed successfully.")
+    print(f"Number of pages: {len(result.pages)}")
+    print(
+        f"Content: {result.content[:500]}..."
+    )  # Print first 500 characters of content
 
     # Process the result
     print("Document analysis completed successfully.")
