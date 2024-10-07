@@ -28,13 +28,13 @@ STANDARD_TEXT_CLASSIFICATION_PROMPT = {
     Classify investment statement excerpts as 'generic' (boilerplate/disclaimer) or 'non-generic' (user-specific/structural).
 
     Guidelines:
-    1. Keep: Names, addresses, tables, account numbers, statement date, and document structure elements (headers, subheaders, formatting)
-    2. Exclude: Common legal disclaimers, general product descriptions, standardized text, etc.
+    1. Keep: Names, addresses, tables, account numbers, account types, statement dates, and document structure elements (titles, headers, sub-headers, formatting, page numbers, etc.). Please also keep small text to be on the safe side.
+    2. Exclude: Common legal disclaimers, general product descriptions, etc.
     
     Note: Classify mixed content as non-generic if contains any specific information.
 
     Output JSON:
-    - "exclude": 0 if not generic, 1 if boilerplate/legal/disclaimer.""",
+    - "exclude": 1 if boilerplate/legal/disclaimer.""",
     "user": """
     Excerpt:
     "{text}"
