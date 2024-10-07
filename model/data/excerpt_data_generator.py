@@ -4,7 +4,8 @@ from tqdm import tqdm
 from app.services.ocr_service import OcrFactory
 from utils.utility import load_file_as_base64, clean_markdown_text
 import pandas as pd
-from model.feature_extraction import StatementExcerptClassifier
+from app.services.text_cleanup import StatementExcerptClassifier
+from model.data.llm import StatementExerptClassifier
 
 
 def get_ocred_files(pickle_dir):
@@ -61,14 +62,18 @@ def ocr_pdfs_and_store_results(root_dir):
 
 
 def classify_pdf_content(root_dir):
-    gpt_classifier = StatementExcerptClassifier("azure-openai")
-    llama_classifier = StatementExcerptClassifier("local-lm-studio")
+    gpt_classifier = StatementExerptClassifier("azure-openai")
+    llama_classifier = StatementExerptClassifier("local-lm-studio")
 
-    output_file = "exerpt_relevance_classification_data.csv"
+    output_file = "excerpt_relevance_classification_data.csv"
     classified_pdfs = get_classified_pdfs(output_file)
 
     for subdir, _, files in os.walk(root_dir):
         pickle_files = [f for f in files if f.endswith(".pickle")]
+        import random
+
+        sample_size = min(25, len(pickle_files))
+        pickle_files = random.sample(pickle_files, sample_size)
         for file in pickle_files:
             if file in classified_pdfs:
                 continue
@@ -85,30 +90,38 @@ def classify_pdf_content(root_dir):
 
                 data = []
                 for line in tqdm(lines, desc=f"Classifying lines in {file}"):
+                    svm_classifier = StatementExcerptClassifier(
+                        classification_level="excerpt"
+                    )
+                    svm_classifier.load_document_items([line])
+                    svm_classification = svm_classifier.get_relevant_items_index()
+                    svm_class = 0 if len(svm_classification) > 0 else 1
+
                     from concurrent.futures import ThreadPoolExecutor
 
                     with ThreadPoolExecutor(max_workers=2) as executor:
                         gpt_future = executor.submit(
-                            gpt_classifier.classify, line, "gpt-4o-mini"
+                            gpt_classifier.classify, line, "gpt-4o"
                         )
                         llama_future = executor.submit(
                             llama_classifier.classify,
                             line,
-                            "meta-llama-3.1-8b-instruct-q4_k_m",
+                            "llama-3.2-3b-instruct",
                         )
 
                         gpt_classification = gpt_future.result()
                         llama_classification = llama_future.result()
                     char_count = len(line)
-                    data.append(
-                        {
-                            "text": line,
-                            "exclude_gpt": gpt_classification["exclude"],
-                            "exclude_llama": llama_classification["exclude"],
-                            "char_count": char_count,
-                            "file_name": file,
-                        }
-                    )
+                    classification = {
+                        "text": line,
+                        "exclude_gpt": gpt_classification[0],
+                        "confidence_gpt": gpt_classification[1],
+                        "exclude_llama": llama_classification[0],
+                        "svm_class": svm_class,
+                        "char_count": char_count,
+                        "file_name": file,
+                    }
+                    data.append(classification)
 
                 # Save progress after processing each PDF
                 save_to_csv(data, output_file)
@@ -127,6 +140,9 @@ def save_to_csv(data, output_file):
 
 if __name__ == "__main__":
     # root_directory = r"G:\My Drive\Startup\NestQ\statements_clustered"
-    root_directory = r"C:\Users\abden\Desktop\NestQ\data\sample_statements\target"
-    ocr_pdfs_and_store_results(root_directory)
+    root_directory = (
+        # r"C:\Users\abden\Desktop\NestQ\model\data\sample_statements\target"
+        r"G:\My Drive\Startup\NestQ\statements_clustered"
+    )
+    # ocr_pdfs_and_store_results(root_directory)
     classify_pdf_content(root_directory)
