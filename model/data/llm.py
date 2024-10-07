@@ -46,7 +46,11 @@ class BaseClassifier(ABC):
 
         response = completion.choices[0].message.content
         classification = json.loads(response)
-        return classification
+        logprob = completion.choices[0].logprobs
+        if logprob is None:
+            return classification["exclude"], None
+        confidence_score = 2.718281828459045 ** logprob.content[0].logprob
+        return classification["exclude"], confidence_score
 
 
 class DisclaimerPageClassifier(BaseClassifier):
@@ -151,86 +155,91 @@ if __name__ == "__main__":
     <!-- PageNumber="2 of 7" -->
 
     """
+
     sample_non_disclaimer_text = r"""<figure>
 
-![](figures/0)
+    ![](figures/0)
 
-<!-- FigureContent="HARBOURFRONT WEALTH MANAGEMENT" -->
+    <!-- FigureContent="HARBOURFRONT WEALTH MANAGEMENT" -->
 
-</figure>
-
-
-Harbourfront Wealth Management Inc. Royal Centre, Suite 1800-1055 West Georgia Street PO Box 11118 Vancouver, BC V6E 3P3
-
-<!-- PageHeader="Investment Portfolio Statement As of August 31, 2022" -->
-
-BLAIR STUART MCREYNOLDS 61 SOVEREIGN DR ST CATHARINES ON L2T 1Z6
-
-Portfolio Summary
-
-| Last Period: This Period: July 31, 2022 August 31, 2022 ||||||
-| Account Type | Total Cash & Investments ($) | Cash ($) | Investments ($) | Total Cash & Investments ($) | % |
-| - | - | - | - | - | - |
-| CAD Cash | 34,197.29 | 4,755.93 | 28,688.80 | 33,444.73 | 9.7 |
-| CAD RRSP | 281,940.94 | 9,249.72 | 239,282.43 | 248,532.15 | 72.3 |
-| CAD LRSP | 10,713.37 | 599.24 | 8,796.80 | 9,396.04 | 2.7 |
-| CAD TFSA | 53,406.53 | 15,007.39 | 37,410.20 | 52,417.59 | 15.3 |
-| Total | 380,258.13 | 29,612.28 | 314,178.23 | 343,790.51 | 100.0 |
-
-Portfolio Asset Allocation
-
-| | Market Value ($) | % |
-| - | - | - |
-| Cash and Equivalents | 29,612.28 | 8.6 |
-| Equities and Equity Funds | 84,964.38 | 24.7 |
-| Other Assets | 229,213.85 | 66.7 |
-| Total | 343,790.51 | 100.0 |
-
-Portfolio Statement Information
-
-Client ID #
-
-3C8MZK
-
-Contact Information
-
-Your Investment Advisor: RICHARDSON & ASSOCIATES 705-797-4950 Bill Richardson CIM, CFP BRichardson@harbourfrontwealth.com 479 King Street Midland, ON L4R 3N4 \*Foreign Exchange Rates
-
-Portfolio Summary and Portfolio Asset Allocation amounts are stated in Canadian dollars, according to the month-end conversion rate. USD 1.00 = CAD 1.309415 CAD 1.00 = USD 0.763700
-
-Inside This Statement
-
-|||
-| - | - |
-| CAD Cash | 3 |
-| CAD RRSP | 4 |
-| CAD LRSP | 5 |
-| CAD TFSA | 6 |
-
-CIPF Canadian Investor Protection Fund MEMBER
-
-<figure>
-
-![](figures/1)
-
-<!-- FigureContent="IIROC" -->
-
-</figure>
+    </figure>
 
 
-<!-- PageNumber="Regulated by Investment Industry Regulatory Organization of Canada 3C8MZK CWPC H8O3 E 1 of 7" -->
-<figure>
+    Harbourfront Wealth Management Inc. Royal Centre, Suite 1800-1055 West Georgia Street PO Box 11118 Vancouver, BC V6E 3P3
 
-![](figures/2)
+    <!-- PageHeader="Investment Portfolio Statement As of August 31, 2022" -->
 
-<!-- FigureContent="HARBOURFRONT WEALTH MANAGEMENT" -->
+    BLAIR STUART MCREYNOLDS 61 SOVEREIGN DR ST CATHARINES ON L2T 1Z6
 
-</figure>
+    Portfolio Summary
+
+    | Last Period: This Period: July 31, 2022 August 31, 2022 ||||||
+    | Account Type | Total Cash & Investments ($) | Cash ($) | Investments ($) | Total Cash & Investments ($) | % |
+    | - | - | - | - | - | - |
+    | CAD Cash | 34,197.29 | 4,755.93 | 28,688.80 | 33,444.73 | 9.7 |
+    | CAD RRSP | 281,940.94 | 9,249.72 | 239,282.43 | 248,532.15 | 72.3 |
+    | CAD LRSP | 10,713.37 | 599.24 | 8,796.80 | 9,396.04 | 2.7 |
+    | CAD TFSA | 53,406.53 | 15,007.39 | 37,410.20 | 52,417.59 | 15.3 |
+    | Total | 380,258.13 | 29,612.28 | 314,178.23 | 343,790.51 | 100.0 |
+
+    Portfolio Asset Allocation
+
+    | | Market Value ($) | % |
+    | - | - | - |
+    | Cash and Equivalents | 29,612.28 | 8.6 |
+    | Equities and Equity Funds | 84,964.38 | 24.7 |
+    | Other Assets | 229,213.85 | 66.7 |
+    | Total | 343,790.51 | 100.0 |
+
+    Portfolio Statement Information
+
+    Client ID #
+
+    3C8MZK
+
+    Contact Information
+
+    Your Investment Advisor: RICHARDSON & ASSOCIATES 705-797-4950 Bill Richardson CIM, CFP BRichardson@harbourfrontwealth.com 479 King Street Midland, ON L4R 3N4 \*Foreign Exchange Rates
+
+    Portfolio Summary and Portfolio Asset Allocation amounts are stated in Canadian dollars, according to the month-end conversion rate. USD 1.00 = CAD 1.309415 CAD 1.00 = USD 0.763700
+
+    Inside This Statement
+
+    |||
+    | - | - |
+    | CAD Cash | 3 |
+    | CAD RRSP | 4 |
+    | CAD LRSP | 5 |
+    | CAD TFSA | 6 |
+
+    CIPF Canadian Investor Protection Fund MEMBER
+
+    <figure>
+
+    ![](figures/1)
+
+    <!-- FigureContent="IIROC" -->
+
+    </figure>
 
 
-Investment Portfolio Statement As of August 31, 2022"""
+    <!-- PageNumber="Regulated by Investment Industry Regulatory Organization of Canada 3C8MZK CWPC H8O3 E 1 of 7" -->
+    <figure>
+
+    ![](figures/2)
+
+    <!-- FigureContent="HARBOURFRONT WEALTH MANAGEMENT" -->
+
+    </figure>
+
+
+    Investment Portfolio Statement As of August 31, 2022"""
     sample_generic_statement_exerpt = r"""The amounts shown in this section are given in Canadian dollars.
     The subsection on Asset Allocation indicates how the consolidated financial assets you hold with us are distributed across each of the basic asset classes. Any securities sold short or debit cash positions are excluded from this asset mix calculation."""
+    sample_generic_statement_exerpt = (
+        r"# Asset Details (CAD RRSP | 38F018-S Cont'd)"
+    )
+
     sample_non_generic_statement_exerpt = r"""| - | - |
     | Your Account Number: | 374-40273-1-3 |
     | Trustee: | Royal Trust Company |
@@ -254,7 +263,7 @@ Investment Portfolio Statement As of August 31, 2022"""
     print(result, "GENERIC")
     classifier = StatementExerptClassifier(provider="local-lm-studio")
     result = classifier.classify(
-        sample_non_generic_statement_exerpt, "meta-llama-3.1-8b-instruct-q4_k_m"
+        sample_non_generic_statement_exerpt, "llama-3.2-3b-instruct"
     )
     print(result, "NON-GENERIC")
 
