@@ -1,0 +1,8 @@
+{
+    "python.envFile": "${workspaceFolder}/.env",
+    "jupyter.notebookFileRoot": "${workspaceFolder}",
+    "path-intellisense.mappings": {
+        "/": "${workspaceFolder}"
+    },
+    "flake8.args": ["--max-line-length=120"]
+}

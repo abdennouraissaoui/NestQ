@@ -1,0 +1,44 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "PYTHONDONTWRITEBYTECODE": "1"
+            }
+        },
+        {
+            "name": "Python: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+              "app.api.routes:app",
+              "--reload"
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "PYTHONDONTWRITEBYTECODE": "1"
+            }
+          },
+          {
+            "name": "Python: Streamlit",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "${workspaceFolder}/app/demo.py"
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}",
+                "PYTHONDONTWRITEBYTECODE": "1"
+            }
+        }
+    ]
+}
