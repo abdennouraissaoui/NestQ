@@ -18,15 +18,15 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-              "app.api.routes:app",
+              "app.main:app",  // Update this line
               "--reload"
             ],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}",
                 "PYTHONDONTWRITEBYTECODE": "1"
             }
-          },
-          {
+        },
+        {
             "name": "Python: Streamlit",
             "type": "debugpy",
             "request": "launch",
