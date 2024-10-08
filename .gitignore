@@ -164,6 +164,4 @@ nestq.ini
 
 *.code-workspace
 
-.vscode
-
 *.db
