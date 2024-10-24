@@ -17,7 +17,6 @@ from sqlalchemy import (
     Enum,
     LargeBinary,
 )
-from sqlalchemy.dialects.postgresql import JSONB, BYTEA
 from sqlalchemy.orm import relationship
 import time
 from app.models.enums import (
@@ -29,7 +28,7 @@ from app.models.enums import (
     Role,
 )
 from sqlalchemy.types import TypeDecorator, TEXT
-
+from sqlalchemy.dialects.postgresql import JSONB
 
 Base = declarative_base()
 
@@ -200,6 +199,7 @@ class Holding(Base):
     market_value = Column(Float, nullable=False)
     current_price = Column(Float, nullable=True)
     currency = Column(String(3), nullable=False)
+    investment_type = Column(String(50), nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -240,11 +240,12 @@ class Account(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=False)
-    account_number = Column(String(50), nullable=False, unique=True)
+    account_id = Column(String(50), nullable=False)
     account_type = Column(Enum(AccountType), nullable=False)
     currency = Column(String(3), nullable=False)
     institution = Column(String(100), nullable=False)
     management_fee_amount = Column(Float, nullable=True)
+    account_value = Column(Float, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -253,12 +254,12 @@ class Account(Base):
     holdings = relationship("Holding", back_populates="account")
     __table_args__ = (
         Index("ix_accounts_prospect_id", "prospect_id"),
-        Index("ix_accounts_account_number", "account_number"),
+        Index("ix_accounts_account_id", "account_id"),
     )
 
     def __repr__(self):
         return f"""<Account(id={self.id}, prospect_id={self.prospect_id},
-    account_number={self.account_number}, account_type={self.account_type}, institution={self.institution})>"""
+    account_id={self.account_id}, account_type={self.account_type}, institution={self.institution})>"""
 
 
 class AssetAllocation(Base):
@@ -309,15 +310,16 @@ class Scan(Base):
     __tablename__ = "scans"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=False)
-    uploaded_file = Column(BYTEA, nullable=False)
-    page_count = Column(Integer, nullable=False)
+    prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=True)
+    uploaded_file = Column(LargeBinary, nullable=False)
+    page_count = Column(Integer, nullable=True)
     file_name = Column(String(255), nullable=False)
-    ocr_source = Column(String(50), nullable=False)
-    llm_source = Column(String(50), nullable=False)  # Added field for LLM source
+    statement_date = Column(BigInteger, nullable=True)
+    ocr_source = Column(String(50), nullable=True)
+    llm_source = Column(String(50), nullable=True)  # Added field for LLM source
     status = Column(Enum(ScanStatus), nullable=False)
-    ocr_text = Column(Text, nullable=False)
-    ocr_text_cleaned = Column(Text, nullable=False)
+    ocr_text = Column(Text, nullable=True)
+    ocr_text_cleaned = Column(Text, nullable=True)
     processing_time = Column(Float, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
@@ -327,6 +329,9 @@ class Scan(Base):
     prospect = relationship("Prospect", back_populates="scans")
     asset_allocations = relationship("AssetAllocation", back_populates="scan")
     performances = relationship("Performance", back_populates="scan")
+    accounts = relationship("Account", secondary="prospects", viewonly=True,
+                            primaryjoin="Scan.prospect_id == Prospect.id",
+                            secondaryjoin="Prospect.id == Account.prospect_id")
     __table_args__ = (
         Index("ix_scans_prospect_id", "prospect_id"),
         Index("ix_scans_status", "status"),
@@ -420,3 +425,4 @@ if __name__ == "__main__":
     from utils.db_connection_manager import engine
 
     Base.metadata.create_all(engine)
+

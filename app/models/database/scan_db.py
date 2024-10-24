@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 
 from app.models.database.orm_models import Advisor, Prospect, Scan
@@ -69,3 +69,10 @@ def get_scans_by_prospect_id(db: Session, advisor_id: int, prospect_id: int):
         .filter(Prospect.id == prospect_id, Advisor.id == advisor_id)
         .all()
     )
+
+
+def get_scan_with_relations(db: Session, scan_id: int) -> Scan:
+    return db.query(Scan).options(
+        joinedload(Scan.prospect),
+        joinedload(Scan.prospect).joinedload(Prospect.accounts)
+    ).filter(Scan.id == scan_id).first()

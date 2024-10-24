@@ -4,8 +4,7 @@ from typing import List
 from app.models.database.orm_models import Account, Prospect, Holding
 from app.models.schemas.account_schema import (
     AccountUpdateSchema,
-    AccountCreateSchema,
-)
+    AccountCreateSchema)
 
 account_not_found_exception = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
@@ -67,16 +66,26 @@ def update_account(
     return account
 
 
-def create_account(db: Session, account_create: AccountCreateSchema) -> Account:
+def create_account(db: Session, account_create: AccountCreateSchema, prospect_id: int) -> Account:
     prospect = (
         db.query(Prospect)
-        .filter(Prospect.id == account_create.prospect_id)
+        .filter(Prospect.id == prospect_id)
         .first()
     )
     if not prospect:
         raise prospect_not_found_exception
-    db_account = Account(**account_create.dict())
+    
+    # Create the account
+    account_data = account_create.model_dump(exclude={"id", "holdings"})
+    db_account = Account(**account_data, prospect_id=prospect_id)
     db.add(db_account)
+    db.flush()  # This assigns an ID to db_account without committing the transaction
+    
+    # Create holdings
+    for holding_data in account_create.holdings:
+        db_holding = Holding(**holding_data.model_dump(exclude={"id"}), account_id=db_account.id)
+        db.add(db_holding)
     db.commit()
     db.refresh(db_account)
+    
     return db_account

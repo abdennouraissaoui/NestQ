@@ -6,6 +6,7 @@ from app.models.schemas.user_schema import (
     UserBaseSchema,
     UserDisplaySchema,
     UserUpdateSchema,
+    UserCreateSchema,
 )
 from sqlalchemy.orm import Session
 from utils.auth import get_current_user
@@ -29,10 +30,10 @@ def check_admin_and_firm(current_user: UserBaseSchema, user_firm_id: int):
     "/",
     response_model=UserDisplaySchema,
     summary="Create a new user",
-    description="Create a new user in the database. This endpoint is accessible to all authenticated users.",
+    description="Create a new user in the database. This endpoint is accessible to all",
 )
 def create_user(
-    request: UserBaseSchema,
+    request: UserCreateSchema,
     db: Session = Depends(get_db),
     status_code=status.HTTP_201_CREATED,
 ):

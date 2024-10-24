@@ -92,7 +92,19 @@ def remove_informational_text(markdown_text: str) -> str:
 
 def remove_disclaimer_pages(input_base64: str) -> str:
     """
-    Remove disclaimer pages from the input base64-encoded PDF (if they exist)
+    Remove disclaimer pages from the input base64-encoded PDF and return a new base64-encoded PDF.
+
+    This function takes a base64-encoded PDF as input, processes it to identify and remove
+    disclaimer pages, and returns a new base64-encoded PDF containing only the relevant pages.
+
+    Args:
+        input_base64 (str): A base64-encoded string representing the input PDF.
+
+    Returns:
+        str: A base64-encoded string representing the new PDF with disclaimer pages removed.
+
+    Raises:
+        ValueError: If the input is not a valid base64-encoded PDF.
     """
     classifier = StatementExcerptClassifier(classification_level="page")
 

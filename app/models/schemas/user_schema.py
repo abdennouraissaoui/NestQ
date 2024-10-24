@@ -10,7 +10,7 @@ class UserBaseSchema(BaseModel):
         example=1,
     )
     role: Role = Field(
-        ..., description="Role of the user in the system", example="admin"
+        ..., description="Role of the user in the system", example=Role.ADVISOR
     )
     email: str = Field(
         ...,

@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from .account_schema import AccountCreateSchema, AccountDisplaySchema
-from .address_schema import AddressCreateSchema, AddressDisplaySchema
+from .address_schema import AddressDisplaySchema
+from .account_schema import AccountDisplaySchema
 
 
 class ProspectBaseSchema(BaseModel):
@@ -14,25 +14,7 @@ class ProspectBaseSchema(BaseModel):
 
 
 class ProspectCreateSchema(ProspectBaseSchema):
-    addresses: List[AddressCreateSchema] = Field(
-        description="List of addresses for the prospect",
-        example=[
-            {
-                "street_number": "123",
-                "street_name": "Main St",
-                "city": "Toronto",
-                "state": "ON",
-                "postal_code": "M5V 2T6",
-                "country": "Canada",
-            }
-        ],
-    )
-    accounts: List[AccountCreateSchema] = Field(
-        description="List of accounts for the prospect",
-        example=[
-            {"account_id": "ACC123", "account_type": "Savings", "currency": "CAD"}
-        ],
-    )
+    pass
 
 
 class ProspectDisplaySchema(ProspectBaseSchema):

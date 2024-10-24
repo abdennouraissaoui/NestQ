@@ -38,15 +38,11 @@ class HoldingCreateSchema(HoldingBaseSchema):
     pass
 
 
-class HoldingDisplaySchema(BaseModel):
+class HoldingDisplaySchema(HoldingBaseSchema):
     id: int = Field(description="Unique identifier for the holding", example=1)
     symbol: Optional[str] = Field(
         description="Symbol or ticker of the investment", example="AAPL"
     )
-    description: str = Field(
-        description="Description or name of the investment", example="Apple Inc."
-    )
-
     created_at: int = Field(
         ..., description="Timestamp when the holding was created"
     )
@@ -62,10 +58,5 @@ class HoldingUpdateSchema(HoldingBaseSchema):
     pass
 
 
-class HoldingDetailDisplaySchema(HoldingBaseSchema):
-    created_at: int = Field(
-        ..., description="Timestamp when the holding was created"
-    )
-    updated_at: int = Field(
-        ..., description="Timestamp when the holding was last updated"
-    )
+class HoldingDetailDisplaySchema(HoldingDisplaySchema):
+    pass

@@ -1,17 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class TokenSchema(BaseModel):
-    access_token: str = Field(
-        ...,
-        description="The access token",
-        example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    )
-    token_type: str = Field(
-        ..., description="The type of the token", example="Bearer"
-    )
-
-
-class TokenResponseSchema(TokenSchema):
-    class Config:
-        from_attributes = True
+class TokenResponseSchema(BaseModel):
+    access_token: str = Field(..., description="The access token")
+    token_type: str = Field(..., description="The type of the token")
+    expires_at: int = Field(..., description="The expiration time of the access token as a Unix epoch timestamp")

@@ -1,6 +1,11 @@
-from fastapi import FastAPI, Request, status, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request, status, HTTPException, APIRouter
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import IntegrityError
+from pydantic import ValidationError
+import os
+import time
 from app.routers import (
     auth,
     user,
@@ -10,42 +15,54 @@ from app.routers import (
     address,
     holding,
     scan,
-)  # Add address here
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import ValidationError
-import os
+)
 from app.models.database.orm_models import Base
 from utils.db_connection_manager import engine
-import time
 
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
 
 
-# session = get_db()
+# Create database tables
 Base.metadata.create_all(engine)
-# session.commit()
 
-app.mount("/static", StaticFiles(directory="./static"), name="static")
+# Mount static files first
+app.mount("/static", StaticFiles(directory="static/dist"), name="static")
+
+# API routes
+api_router = APIRouter(prefix="/api")
+routes = [
+    auth.router,
+    user.router,
+    prospect.router,
+    advisor.router,
+    account.router,
+    address.router,
+    scan.router,
+    holding.router,
+]
+
+for route in routes:
+    api_router.include_router(route)
 
 
-@app.get("/")
-def health_check():
-    return {"status": "Healthy now"}
+@api_router.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": int(time.time())}
+
+app.include_router(api_router)
 
 
-app.include_router(auth.router)
-app.include_router(user.router)
-app.include_router(prospect.router)
-app.include_router(advisor.router)
-app.include_router(account.router)  # Include the account router
-app.include_router(address.router)  # Add this line
-app.include_router(scan.router)
-app.include_router(holding.router)
+# Serve index.html for non-file requests
+@app.get("/{full_path:path}")
+async def serve_react_app(full_path: str):
+    file_path = f"static/dist/{full_path}"
+    if os.path.isfile(file_path):
+        return FileResponse(file_path)
+    return FileResponse("static/dist/index.html")
 
 
-# Specific exception handlers
+# Exception handlers
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
@@ -58,7 +75,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 async def integrity_error_handler(request: Request, exc: IntegrityError):
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content={"detail": "Integrity error: Email already exists"},
+        content={"detail": f"Integrity error: {str(exc)}"},
     )
 
 
@@ -70,7 +87,6 @@ async def validation_error_handler(request: Request, exc: ValidationError):
     )
 
 
-# Global exception handler for unexpected errors
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
@@ -78,10 +94,11 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": f"An unexpected error occurred: {str(exc)}"},
     )
 
-
+# CORS middleware
 if os.getenv("NESTQ_ENV") != "production":
     origins = [
-        "http://localhost:3000"  # React app
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
     ]
 
     app.add_middleware(
@@ -93,6 +110,7 @@ if os.getenv("NESTQ_ENV") != "production":
     )
 
 
+# Process time middleware
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
@@ -101,8 +119,6 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
-
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

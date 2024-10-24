@@ -4,7 +4,7 @@ from fastapi import (
     HTTPException,
     UploadFile,
     File,
-    Form,
+    # Form,
     status,
 )
 from sqlalchemy.orm import Session
@@ -14,6 +14,7 @@ from app.models.database.scan_db import (
     list_scans,
     delete_scan,
     update_scan,
+    get_scan_with_relations,
 )
 from app.models.schemas.scan_schema import (
     ScanCreateSchema,
@@ -24,11 +25,12 @@ from app.models.enums import ScanStatus
 from app.models.database.prospect_db import get_prospect
 import base64
 from app.models.database.account_db import create_account
-from app.models.database.holding_db import create_holding
 from utils.auth import get_current_user
 from utils.db_connection_manager import get_db
 from app.services.statement_extractor import FinancialStatementProcessor
 from app.models.database.orm_models import User
+from app.models.schemas.prospect_schema import ProspectCreateSchema
+from app.models.database.prospect_db import create_prospect
 
 
 router = APIRouter(prefix="/scans", tags=["scans"])
@@ -56,16 +58,17 @@ def check_prospect_ownership(
 @router.post("/", response_model=ScanDisplaySchema)
 async def upload_scan(
     file: UploadFile = File(...),
-    prospect_id: int = Form(...),
+    # prospect_id: int = Form(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
     # Check if the current user owns the prospect
-    if not check_prospect_ownership(db, current_user.advisor.id, prospect_id):
-        raise HTTPException(
-            status_code=403,
-            detail="You don't have permission to upload scans for this prospect",
-        )
+    # TODO: Uncomment this once we have prospect ownership implemented
+    # if not check_prospect_ownership(db, current_user.advisor.id, prospect_id):
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail="You don't have permission to upload scans for this prospect",
+    #     )
 
     # Read the file content
     file_content = await file.read()
@@ -75,20 +78,36 @@ async def upload_scan(
 
     # Create initial scan entry
     scan_create = ScanCreateSchema(
-        prospect_id=prospect_id,
         file_name=file.filename,
         uploaded_file=base64_content,
-        status=ScanStatus.UPLOADED,
+        status=ScanStatus.UPLOADED
     )
+
     db_scan = create_scan(db, scan_create)
 
-    processor_update, account_create = FinancialStatementProcessor().process_scan(
+    processor_update, scan_extracted_data = FinancialStatementProcessor().process_scan(
         base64_content
     )
+
+    # Create a new prospect
+    new_prospect = create_prospect(
+        db, ProspectCreateSchema(first_name=scan_extracted_data.investor_first_name,
+                                 last_name=scan_extracted_data.investor_last_name),
+        current_user.advisor.id
+    )
+
+    processor_update.prospect_id = new_prospect.id
+
     db_scan = update_scan(db, db_scan.id, processor_update)
-    account = create_account(db, account_create, db_scan.prospect_id)
-    create_holding(db, account_create.holdings, account.id)
-    return scan_create
+
+    # Create accounts
+    for account_create in scan_extracted_data.accounts:
+        create_account(db, account_create, new_prospect.id)
+
+    # Fetch the updated scan with related data
+    db_scan = get_scan_with_relations(db, db_scan.id)
+
+    return db_scan
 
 
 @router.get("/{scan_id}", response_model=ScanDisplayDetailSchema)
@@ -125,7 +144,7 @@ def read_scans(
     return scans
 
 
-@router.delete("/{scan_id}", response_model=bool)
+@router.delete("/{scan_id}")
 def delete_scan_route(
     scan_id: int,
     db: Session = Depends(get_db),

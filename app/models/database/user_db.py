@@ -36,6 +36,7 @@ def create_user(db: Session, request: UserCreateSchema) -> Optional[User]:
         return new_user
 
     except IntegrityError:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"
         )
@@ -47,6 +48,7 @@ def create_user(db: Session, request: UserCreateSchema) -> Optional[User]:
         )
 
     except Exception as e:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred: {str(e)}",
