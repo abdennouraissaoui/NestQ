@@ -25,7 +25,8 @@ class ScanDisplaySchema(BaseModel):
     )
 
     statement_date: int = Field(
-        description="Timestamp when the statement was created"
+        description="Timestamp when the statement was created",
+        example=1672540800,
     )
 
     accounts: List[AccountDisplaySchema] = Field(

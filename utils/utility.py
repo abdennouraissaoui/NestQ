@@ -4,7 +4,6 @@ import base64
 import pyperclip
 import pandas as pd
 from datetime import datetime, timezone
-import pytz
 import re
 
 
@@ -57,24 +56,6 @@ def epoch_to_utc(epoch_time):
 def utc_to_epoch(utc_datetime):
     """Convert UTC datetime object to Epoch Unix Timestamp."""
     return int(utc_datetime.timestamp())
-
-
-def epoch_to_est(epoch_time):
-    """Convert Epoch Unix Timestamp to EST datetime object."""
-    utc_time = epoch_to_utc(epoch_time)
-    est_tz = pytz.timezone("America/New_York")
-    return utc_time.astimezone(est_tz)
-
-
-def est_to_epoch(est_datetime):
-    """Convert EST datetime object to Epoch Unix Timestamp."""
-    if (
-        est_datetime.tzinfo is None
-        or est_datetime.tzinfo.utcoffset(est_datetime) is None
-    ):
-        est_tz = pytz.timezone("America/New_York")
-        est_datetime = est_tz.localize(est_datetime)
-    return int(est_datetime.timestamp())
 
 
 def find_pdfs(directory):
