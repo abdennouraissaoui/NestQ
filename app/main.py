@@ -17,7 +17,7 @@ from app.routers import (
     scan,
 )
 from app.models.database.orm_models import Base
-from utils.db_connection_manager import engine
+from app.utils.db_connection_manager import engine
 
 
 app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
@@ -27,7 +27,7 @@ app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
 Base.metadata.create_all(engine)
 
 # Mount static files first
-app.mount("/static", StaticFiles(directory="static/dist"), name="static")
+app.mount("/static", StaticFiles(directory="app/static/dist"), name="static")
 
 # API routes
 api_router = APIRouter(prefix="/api")
@@ -56,10 +56,10 @@ app.include_router(api_router)
 # Serve index.html for non-file requests
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str):
-    file_path = f"static/dist/{full_path}"
+    file_path = f"app/static/dist/{full_path}"
     if os.path.isfile(file_path):
         return FileResponse(file_path)
-    return FileResponse("static/dist/index.html")
+    return FileResponse("app/static/dist/index.html")
 
 
 # Exception handlers
@@ -121,4 +121,4 @@ async def add_process_time_header(request: Request, call_next):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)

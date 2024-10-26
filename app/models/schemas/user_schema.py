@@ -31,7 +31,10 @@ class UserBaseSchema(BaseModel):
 
 class UserCreateSchema(UserBaseSchema):
     password: str = Field(
-        ..., examples=["password"], description="Password for the user account"
+        ...,
+        examples=["StrongP@ssw0rd123!"],
+        description="Password for the user account. Must be at least 8 characters long "
+        "and include uppercase, lowercase, number, and special character.",
     )
 
 

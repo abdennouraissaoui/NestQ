@@ -1,6 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, status, HTTPException
-from utils.db_connection_manager import get_db
+from app.utils.db_connection_manager import get_db
 from app.models.database import user_db
 from app.models.schemas.user_schema import (
     UserBaseSchema,
@@ -9,7 +9,7 @@ from app.models.schemas.user_schema import (
     UserCreateSchema,
 )
 from sqlalchemy.orm import Session
-from utils.auth import get_current_user
+from app.utils.auth import get_current_user
 from app.models.enums import Role  # Import the Role enum
 
 router = APIRouter(prefix="/user", tags=["user"])

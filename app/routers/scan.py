@@ -25,8 +25,8 @@ from app.models.enums import ScanStatus
 from app.models.database.prospect_db import get_prospect
 import base64
 from app.models.database.account_db import create_account
-from utils.auth import get_current_user
-from utils.db_connection_manager import get_db
+from app.utils.auth import get_current_user
+from app.utils.db_connection_manager import get_db
 from app.services.statement_extractor import FinancialStatementProcessor
 from app.models.database.orm_models import User
 from app.models.schemas.prospect_schema import ProspectCreateSchema

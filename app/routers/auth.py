@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.models.schemas.auth_schema import TokenResponseSchema
-from utils.auth import authenticate_user, create_access_token, create_refresh_token, verify_token, get_user
-from utils.db_connection_manager import get_db
+from app.utils.auth import authenticate_user, create_access_token, create_refresh_token, verify_token, get_user
+from app.utils.db_connection_manager import get_db
 from fastapi import Cookie
 from app.config import app_config
 

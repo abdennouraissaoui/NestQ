@@ -3,7 +3,7 @@ import configparser
 
 # Load the .ini configuration file
 config = configparser.ConfigParser()
-config.read("nestq.ini")
+config.read("app/nestq.ini")
 
 
 class Config:

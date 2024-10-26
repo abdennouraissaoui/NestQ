@@ -4,5 +4,12 @@
     "path-intellisense.mappings": {
         "/": "${workspaceFolder}"
     },
-    "flake8.args": ["--max-line-length=120"]
+    "flake8.args": ["--max-line-length=120"],
+    "draw.folder.structure.exclude": [
+        "**/venv/**",
+        "**/__pycache__/**",
+        "**/migrations/**",
+        "**/.github/**",
+        "**/.git/**",
+    ]
 }

@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from pydantic import ValidationError
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from utils.hash import Hash
+from app.utils.hash import Hash
 from app.models.database.orm_models import User
 from app.models.schemas.user_schema import UserCreateSchema, UserUpdateSchema
 from app.models.enums import Role

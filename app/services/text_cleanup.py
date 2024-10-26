@@ -2,7 +2,7 @@
 Orchestration of the text cleanup process
 """
 
-from model.feature_extraction import (
+from app.model.feature_extraction import (
     PageFeatureExtractor,
     ExcerptFeatureExtractor,
 )
@@ -13,7 +13,7 @@ from io import BytesIO
 import joblib
 
 # from app.config import Config
-from utils.utility import clean_markdown_text
+from app.utils.utility import clean_markdown_text
 
 
 class StatementExcerptClassifier:
@@ -154,7 +154,7 @@ def remove_disclaimer_pages(input_base64: str) -> str:
 
 
 if __name__ == "__main__":
-    from utils.utility import load_file_as_base64
+    from app.utils.utility import load_file_as_base64
     from app.services.statement_extractor import StatementExtractor
     from app.models.schemas.account_schema import AccountCreateSchema
 

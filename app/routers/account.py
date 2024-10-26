@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from utils.auth import get_current_user
+from app.utils.auth import get_current_user
 from app.models.database import account_db
 from app.models.database.orm_models import User, Holding
 from app.models.schemas.account_schema import (
@@ -9,7 +9,7 @@ from app.models.schemas.account_schema import (
     AccountDetailDisplaySchema,
     AccountUpdateSchema,
 )
-from utils.db_connection_manager import get_db
+from app.utils.db_connection_manager import get_db
 
 
 router = APIRouter(

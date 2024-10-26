@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
-from utils.auth import get_current_user
+from app.utils.auth import get_current_user
 from app.models.database import address_db
 from app.models.database.orm_models import User
 from app.models.schemas.address_schema import (
     AddressDisplaySchema,
     AddressUpdateSchema,
 )
-from utils.db_connection_manager import get_db
+from app.utils.db_connection_manager import get_db
 
 router = APIRouter(
     prefix="/address",

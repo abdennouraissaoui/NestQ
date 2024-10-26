@@ -422,7 +422,7 @@ class WebhookEvent(Base):
 
 # Create tables in the database
 if __name__ == "__main__":
-    from utils.db_connection_manager import engine
+    from app.utils.db_connection_manager import engine
 
     Base.metadata.create_all(engine)
 

@@ -14,8 +14,8 @@ from app.models.database.prospect_db import (
     update_prospect,
     delete_prospect,
 )
-from utils.auth import get_current_user
-from utils.db_connection_manager import get_db
+from app.utils.auth import get_current_user
+from app.utils.db_connection_manager import get_db
 from app.models.database.user_db import User
 from app.models.enums import Role
 from app.models.database.scan_db import get_scans_by_prospect_id

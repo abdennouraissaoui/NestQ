@@ -9,8 +9,8 @@ from app.models.schemas.holding_schema import (
     HoldingDetailDisplaySchema,
 )
 from app.models.database import holding_db
-from utils.db_connection_manager import get_db
-from utils.auth import get_current_user
+from app.utils.db_connection_manager import get_db
+from app.utils.auth import get_current_user
 from app.models.schemas.user_schema import UserBaseSchema
 
 router = APIRouter(prefix="/holdings", tags=["holdings"])
