@@ -1,16 +1,19 @@
 import os
 from typing import Any, Dict
 import configparser
+from urllib.parse import unquote
 
 
 def load_config() -> Dict[str, Any]:
     config = {}
     if os.path.exists("app/nestq.ini"):
         ini_config = configparser.ConfigParser()
-        ini_config.read("app/nestq.ini")
+        ini_config.optionxform = str  # Preserve case of keys
+        with open("app/nestq.ini", "r") as f:
+            ini_config.read_string(f.read().replace('%', '%%'))
         for section in ini_config.sections():
             for key, value in ini_config[section].items():
-                config[f"{section.upper()}_{key.upper()}"] = value
+                config[f"{section.upper()}_{key.upper()}"] = unquote(value)
     return config
 
 
