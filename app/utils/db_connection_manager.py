@@ -7,7 +7,6 @@ engine = create_engine(
     app_config.SQLALCHEMY_DATABASE_URI,
     pool_size=1,
     max_overflow=5,
-    connect_args={"check_same_thread": False},
 )
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
