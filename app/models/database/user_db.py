@@ -35,7 +35,8 @@ def create_user(db: Session, request: UserCreateSchema) -> Optional[User]:
             advisor_db.create_advisor(db, user_id=new_user.id)
         return new_user
 
-    except IntegrityError:
+    except IntegrityError as e:
+        print(e)
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists"

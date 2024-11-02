@@ -1,26 +1,17 @@
 """
-
 Orchestrates the extraction of holdings from a financial statement.
 """
-
 from app.services.prompts import INVESTMENT_STATEMENT_DATA_EXTRACTION
-
 from app.models.schemas.extraction_schema import ScanExtractedDataSchema
-
 from app.services.llm_factory import LlmFactory
-
 from app.services.ocr_service import OcrFactory
-
 from app.services.text_cleanup import (
     remove_disclaimer_pages,
     clean_markdown_text,
     remove_informational_text,
 )
-
 from typing import Tuple
-
 from app.models.schemas.scan_schema import ScanProcessorUpdateSchema
-
 from app.models.enums import ScanStatus
 import time
 
@@ -32,7 +23,6 @@ class FinancialStatementProcessor:
         llm_provider: str = "azure-openai",
     ):
         self.ocr_factory = OcrFactory(ocr_provider)
-
         self.llm_factory = LlmFactory(llm_provider)
 
     def process_scan(
@@ -48,7 +38,7 @@ class FinancialStatementProcessor:
         ocr_result = self.ocr_factory.get_document_analysis(cleaned_doc_base64)
 
         markdown_text = clean_markdown_text(ocr_result.content)
-
+        # context: str = "\n\n".join(self.classifier.filter_included(markdown_text.split("\n\n")))
         context: str = remove_informational_text(markdown_text)
         # context = markdown_text
         # Extract statement information only once
