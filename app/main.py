@@ -18,6 +18,7 @@ from app.routers import (
 )
 from app.models.database.orm_models import Base
 from app.utils.db_connection_manager import engine
+from pathlib import Path
 
 
 app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
@@ -56,10 +57,18 @@ app.include_router(api_router)
 # Serve index.html for non-file requests
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str):
-    file_path = f"app/static/dist/{full_path}"
-    if os.path.isfile(file_path):
-        return FileResponse(file_path)
-    return FileResponse("app/static/dist/index.html")
+    static_dir = Path("app/static/dist")
+    try:
+        # Resolve the full path and ensure it's within the static directory
+        file_path = (static_dir / full_path).resolve()
+        if not str(file_path).startswith(str(static_dir.resolve())):
+            return FileResponse(static_dir / "index.html")
+        
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(static_dir / "index.html")
+    except (ValueError, RuntimeError):
+        return FileResponse(static_dir / "index.html")
 
 
 # Exception handlers
