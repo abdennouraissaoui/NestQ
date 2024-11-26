@@ -3,7 +3,7 @@ Database models for the application.
 Models must always be in sync with the database.
 """
 
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship, mapped_column
 from sqlalchemy import (
     Column,
     String,
@@ -17,7 +17,6 @@ from sqlalchemy import (
     Enum,
     LargeBinary,
 )
-from sqlalchemy.orm import relationship
 import time
 from app.models.enums import (
     AccountType,
@@ -29,6 +28,7 @@ from app.models.enums import (
 )
 from sqlalchemy.types import TypeDecorator, TEXT
 from sqlalchemy.dialects.postgresql import JSONB
+from pgvector.sqlalchemy import Vector  # Import Vector from pgvector.sqlalchemy
 
 Base = declarative_base()
 
@@ -204,7 +204,6 @@ class Holding(Base):
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
-
     account = relationship("Account", back_populates="holdings")
     asset = relationship("Asset", back_populates="holdings")
     __table_args__ = (
@@ -224,12 +223,17 @@ class Asset(Base):
     name = Column(String(100), nullable=False)
     symbol = Column(String(10), nullable=False, unique=True)
     description = Column(Text, nullable=True)
+    embedding = mapped_column(Vector(3072), nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
 
     holdings = relationship("Holding", back_populates="asset")
+
+    __table_args__ = (
+        Index("ix_assets_embedding", "embedding", postgresql_using="ivfflat"),
+    )
 
     def __repr__(self):
         return f"""<Asset(id={self.id}, symbol='{self.symbol}', name='{self.name}')>"""
@@ -329,9 +333,13 @@ class Scan(Base):
     prospect = relationship("Prospect", back_populates="scans")
     asset_allocations = relationship("AssetAllocation", back_populates="scan")
     performances = relationship("Performance", back_populates="scan")
-    accounts = relationship("Account", secondary="prospects", viewonly=True,
-                            primaryjoin="Scan.prospect_id == Prospect.id",
-                            secondaryjoin="Prospect.id == Account.prospect_id")
+    accounts = relationship(
+        "Account",
+        secondary="prospects",
+        viewonly=True,
+        primaryjoin="Scan.prospect_id == Prospect.id",
+        secondaryjoin="Prospect.id == Account.prospect_id",
+    )
     __table_args__ = (
         Index("ix_scans_prospect_id", "prospect_id"),
         Index("ix_scans_status", "status"),
@@ -425,4 +433,3 @@ if __name__ == "__main__":
     from app.utils.db_connection_manager import engine
 
     Base.metadata.create_all(engine)
-

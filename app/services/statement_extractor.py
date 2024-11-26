@@ -7,9 +7,9 @@ from app.services.llm_factory import LlmFactory
 from app.services.ocr_service import OcrFactory
 from app.services.text_cleanup import (
     remove_disclaimer_pages,
-    clean_markdown_text,
     remove_informational_text,
 )
+from app.utils.utility import clean_markdown_text
 from typing import Tuple
 from app.models.schemas.scan_schema import ScanProcessorUpdateSchema
 from app.models.enums import ScanStatus

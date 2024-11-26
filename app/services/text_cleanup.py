@@ -2,7 +2,7 @@
 Orchestration of the text cleanup process
 """
 
-from app.preprocessing.feature_extraction import (
+from app.model_training.feature_extraction import (
     PageFeatureExtractor,
     ExcerptFeatureExtractor,
 )
