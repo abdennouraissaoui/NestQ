@@ -28,7 +28,7 @@ app = FastAPI(docs_url="/api/docs", openapi_url="/api/openapi.json")
 Base.metadata.create_all(engine)
 
 # Mount static files first
-app.mount("/static", StaticFiles(directory="app/static/dist"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # API routes
 api_router = APIRouter(prefix="/api")
@@ -51,19 +51,20 @@ for route in routes:
 async def health_check():
     return {"status": "healthy", "timestamp": int(time.time())}
 
+
 app.include_router(api_router)
 
 
 # Serve index.html for non-file requests
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str):
-    static_dir = Path("app/static/dist")
+    static_dir = Path("app/static")
     try:
         # Resolve the full path and ensure it's within the static directory
         file_path = (static_dir / full_path).resolve()
         if not str(file_path).startswith(str(static_dir.resolve())):
             return FileResponse(static_dir / "index.html")
-        
+
         if file_path.is_file():
             return FileResponse(file_path)
         return FileResponse(static_dir / "index.html")
@@ -103,12 +104,10 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"detail": f"An unexpected error occurred: {str(exc)}"},
     )
 
+
 # CORS middleware
 if os.getenv("NESTQ_ENV") != "production":
-    origins = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173"
-    ]
+    origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
     app.add_middleware(
         CORSMiddleware,
@@ -128,6 +127,8 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = str(process_time)
     return response
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
