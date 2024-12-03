@@ -26,9 +26,8 @@ from app.models.enums import (
     ScanStatus,
     Role,
 )
-from sqlalchemy.types import TypeDecorator, TEXT
 from sqlalchemy.dialects.postgresql import JSONB
-from pgvector.sqlalchemy import Vector  # Import Vector from pgvector.sqlalchemy
+from pgvector.sqlalchemy import Vector
 
 Base = declarative_base()
 
@@ -87,16 +86,6 @@ class User(Base):
         return f"""<User(id={self.id}, email='{self.email}', role={self.role})>"""
 
 
-class JSONType(TypeDecorator):
-    impl = TEXT
-
-    def load_dialect_impl(self, dialect):
-        if dialect.name == "postgresql":
-            return dialect.type_descriptor(JSONB())
-        else:
-            return dialect.type_descriptor(TEXT())
-
-
 class AuditLog(Base):
     __tablename__ = "audit_log"
 
@@ -104,8 +93,8 @@ class AuditLog(Base):
     table_name = Column(String(100), nullable=False)
     record_id = Column(Integer, nullable=False)
     action = Enum(AuditLogAction, nullable=False)
-    old_data = Column(JSONType, nullable=True)
-    new_data = Column(JSONType, nullable=True)
+    old_data = Column(JSONB, nullable=True)
+    new_data = Column(JSONB, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     timestamp = Column(BigInteger, default=utc_timestamp, nullable=False)
@@ -223,7 +212,7 @@ class Asset(Base):
     name = Column(String(100), nullable=False)
     symbol = Column(String(10), nullable=False, unique=True)
     description = Column(Text, nullable=True)
-    embedding = mapped_column(Vector(3072), nullable=True)
+    embedding = mapped_column(Vector(2000), nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -232,7 +221,12 @@ class Asset(Base):
     holdings = relationship("Holding", back_populates="asset")
 
     __table_args__ = (
-        Index("ix_assets_embedding", "embedding", postgresql_using="ivfflat"),
+        Index(
+            "ix_assets_embedding_hnsw",
+            "embedding",
+            postgresql_using="hnsw",
+            postgresql_ops={"embedding": "vector_cosine_ops"},
+        ),
     )
 
     def __repr__(self):
@@ -367,7 +361,7 @@ class Subscription(Base):
     canceled_at = Column(BigInteger, nullable=True)
     ended_at = Column(BigInteger, nullable=True)
     default_payment_method = Column(String(255), nullable=True)
-    attributes = Column(JSONType, nullable=True)
+    attributes = Column(JSONB, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -397,7 +391,7 @@ class Price(Base):
     amount = Column(Integer, nullable=False)
     label = Column(String(255), nullable=True)
     description = Column(Text, nullable=True)
-    attributes = Column(JSONType, nullable=True)
+    attributes = Column(JSONB, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -421,7 +415,7 @@ class WebhookEvent(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     external_event_id = Column(String(255), unique=True, nullable=False)
     event_type = Column(String(255), nullable=False)
-    data = Column(JSONType, nullable=False)
+    data = Column(JSONB, nullable=False)
 
     def __repr__(self):
         return f"""<WebhookEvent(id={self.id}, stripe_event_id={self.stripe_event_id},
