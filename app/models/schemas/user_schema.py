@@ -35,6 +35,7 @@ class UserCreateSchema(UserBaseSchema):
         examples=["StrongP@ssw0rd123!"],
         description="Password for the user account. Must be at least 8 characters long "
         "and include uppercase, lowercase, number, and special character.",
+        min_length=8,
     )
 
 
