@@ -37,6 +37,17 @@ class Config:
         "AZURE-OPENAI_ENDPOINT"
     )
 
+    AZURE_COMMUNICATION_API_KEY = os.getenv(
+        "AZURE_COMMUNICATION_API_KEY"
+    ) or local_config.get("AZURE-COMMUNICATION_API_KEY")
+
+    AZURE_COMMUNICATION_ENDPOINT = os.getenv(
+        "AZURE_COMMUNICATION_ENDPOINT"
+    ) or local_config.get("AZURE-COMMUNICATION_ENDPOINT")
+    EMAIL_SENDER_ADDRESS = os.getenv("EMAIL_SENDER_ADDRESS") or local_config.get(
+        "AZURE-COMMUNICATION_EMAIL_SENDER_ADDRESS"
+    )
+
     RELEVANCE_THRESHOLD = float(os.getenv("RELEVANCE_THRESHOLD", "0.7"))
 
     SALT = os.getenv("AUTH_SALT") or local_config.get("AUTH_SALT")
