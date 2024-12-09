@@ -127,3 +127,8 @@ def get_all_users_by_firm(db: Session, firm_id: int) -> List[User]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An unexpected error occurred: {str(e)}",
         )
+
+
+def update_user_password(db: Session, user: User, new_password: str) -> None:
+    user.password = Hash.bcrypt(new_password)
+    db.commit()
