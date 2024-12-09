@@ -35,6 +35,7 @@ def login_for_access_token(
         samesite="none" if app_config.DEBUG else "lax",
         expires=refresh_expires,
     )
+    user.update_login_info(db)
     return {
         "access_token": access_token,
         "token_type": "bearer",

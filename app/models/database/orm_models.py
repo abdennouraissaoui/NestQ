@@ -28,6 +28,7 @@ from app.models.enums import (
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from pgvector.sqlalchemy import Vector
+from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
@@ -81,6 +82,12 @@ class User(Base):
     audit_logs = relationship("AuditLog", back_populates="user")
 
     __table_args__ = (Index("ix_user_firm_id", "firm_id"),)
+
+    def update_login_info(self, session: Session):
+        """Update the last login time and increment the sign-in count."""
+        self.last_login = utc_timestamp()
+        self.sign_in_count += 1
+        session.commit()
 
     def __repr__(self):
         return f"""<User(id={self.id}, email='{self.email}', role={self.role})>"""
