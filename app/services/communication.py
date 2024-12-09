@@ -4,7 +4,7 @@ from azure.communication.email import EmailClient
 from azure.core.credentials import AzureKeyCredential
 from fastapi import HTTPException
 
-from app.config import Config
+from app.config import app_config
 from app.templates.email_templates import (
     get_password_reset_template,
     get_welcome_template,
@@ -14,11 +14,10 @@ from app.templates.email_templates import (
 class EmailService:
     def __init__(self):
         self.client = EmailClient(
-            endpoint=Config.AZURE_COMMUNICATION_ENDPOINT,
-            credential=AzureKeyCredential(Config.AZURE_COMMUNICATION_API_KEY),
+            endpoint=app_config.AZURE_COMMUNICATION_ENDPOINT,
+            credential=AzureKeyCredential(app_config.AZURE_COMMUNICATION_API_KEY),
         )
-        self.sender_address = Config.EMAIL_SENDER_ADDRESS
-        print(self.sender_address)
+        self.sender_address = app_config.EMAIL_SENDER_ADDRESS
         self.poller_wait_time = 10
         self.max_polling_attempts = 18
 
