@@ -67,6 +67,8 @@ class Config:
         "DATABASE_DEV_DB_URI"
     )
 
+    FRONTEND_URL = os.getenv("FRONTEND_URL") or local_config.get("FRONTEND_URL")
+
 
 app_config = Config()
 
