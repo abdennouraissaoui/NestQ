@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.models.schemas.auth_schema import TokenResponseSchema
@@ -103,13 +103,16 @@ async def reset_password(
         )
 
 
-@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+@router.post(
+    "/forgot-password", response_model=dict, status_code=status.HTTP_200_OK
+)
 async def request_password_reset(
-    request: PasswordResetRequestSchema, db: Session = Depends(get_db)
+    request: PasswordResetRequestSchema,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
 ):
     user = db.query(User).filter(User.email == request.email).first()
     if user:
-        # Generate reset token valid for 1 hour
         reset_token, _ = create_access_token(
             email=user.email,
             user_id=str(user.id),
@@ -117,14 +120,16 @@ async def request_password_reset(
             expires_delta=15 * 60,  # 15 minutes
         )
 
-        # Generate reset link
         reset_link = (
             f"{app_config.FRONTEND_URL}/reset-password?token={reset_token}"
         )
 
-        # Send reset email
+        # Create email service and send email asynchronously
         email_service = EmailService()
-        await email_service.send_password_reset_email(user.email, reset_link)
+        background_tasks.add_task(
+            email_service.send_password_reset_email,
+            email=user.email,
+            reset_link=reset_link,
+        )
 
-    # Always return success to prevent email enumeration
     return {"message": "If the email exists, a password reset link has been sent"}

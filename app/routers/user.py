@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, BackgroundTasks
 from app.utils.db_connection_manager import get_db
 from app.models.database import user_db
 from app.models.schemas.user_schema import (
@@ -11,6 +11,7 @@ from app.models.schemas.user_schema import (
 from sqlalchemy.orm import Session
 from app.utils.auth import get_current_user
 from app.models.enums import Role  # Import the Role enum
+from app.services.communication import EmailService
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -36,8 +37,16 @@ def create_user(
     request: UserCreateSchema,
     db: Session = Depends(get_db),
     status_code=status.HTTP_201_CREATED,
+    background_tasks: BackgroundTasks = BackgroundTasks(),
 ):
-    return user_db.create_user(db, request)
+    new_user = user_db.create_user(db, request)
+    email_service = EmailService()
+    background_tasks.add_task(
+        email_service.send_welcome_email,
+        email=new_user.email,
+        first_name=new_user.first_name,
+    )
+    return new_user
 
 
 @router.get(
