@@ -1,6 +1,10 @@
 import os
 import logging
 import joblib
+import warnings
+from sklearn.exceptions import InconsistentVersionWarning
+
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 
 class ExerptClassifier:
@@ -12,13 +16,13 @@ class ExerptClassifier:
                 - model_type: str, 'ann'
                 - pipeline_path: str, path to the saved sklearn Pipeline
         """
-        pipeline_path = model_config.get('pipeline_path')
+        pipeline_path = model_config.get("pipeline_path")
 
         if not pipeline_path:
             raise ValueError("pipeline_path must be provided")
 
         # Load pipeline using cloudpickle instead of joblib
-        with open(pipeline_path, 'rb') as f:
+        with open(pipeline_path, "rb") as f:
             self.pipeline = joblib.load(f)
         self.threshold = 0.5
 
@@ -68,8 +72,11 @@ class ExerptClassifier:
             return []
 
         exclude_predictions = self.predict_batch(texts)
-        return [text for text, should_exclude in zip(texts, exclude_predictions)
-                if not should_exclude]
+        return [
+            text
+            for text, should_exclude in zip(texts, exclude_predictions)
+            if not should_exclude
+        ]
 
 
 if __name__ == "__main__":
@@ -79,10 +86,10 @@ if __name__ == "__main__":
     """
     # Define model configuration
     model_config = {
-        'pipeline_path': os.path.join(current_dir, "svm_filter_pipeline.pkl")
+        "pipeline_path": os.path.join(current_dir, "svm_filter_pipeline.pkl")
     }
 
-    texts = context.split('\n\n')
+    texts = context.split("\n\n")
     print("Number of excerpts", len(texts))
     # Test ANN model
 
@@ -95,7 +102,7 @@ if __name__ == "__main__":
         context_filtered = classifier.filter_included(texts)
 
         # Join filtered texts with a single space to create context string
-        context = '\n\n'.join(context_filtered)
+        context = "\n\n".join(context_filtered)
         print(context)
     except Exception as e:
         print(f"Error with SVM model: {str(e)}")
