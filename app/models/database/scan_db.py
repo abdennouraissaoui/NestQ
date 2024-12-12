@@ -1,13 +1,15 @@
-from sqlalchemy.orm import Session, joinedload
-
-
+from sqlalchemy.orm import Session
 from app.models.database.orm_models import Advisor, Prospect, Scan
-
-
 from app.models.schemas.scan_schema import (
     ScanCreateSchema,
     ScanProcessorUpdateSchema,
 )
+from app.utils.db_connection_manager import SessionLocal
+from app.services.statement_extractor import FinancialStatementProcessor
+from app.models.schemas.prospect_schema import ProspectCreateSchema
+from app.models.database.prospect_db import create_prospect
+from app.models.database.account_db import create_account
+from app.models.schemas.scan_schema import ScanStatus
 
 
 def create_scan(db: Session, scan: ScanCreateSchema) -> Scan:
@@ -72,7 +74,39 @@ def get_scans_by_prospect_id(db: Session, advisor_id: int, prospect_id: int):
 
 
 def get_scan_with_relations(db: Session, scan_id: int) -> Scan:
-    return db.query(Scan).options(
-        joinedload(Scan.prospect),
-        joinedload(Scan.prospect).joinedload(Prospect.accounts)
-    ).filter(Scan.id == scan_id).first()
+    return db.query(Scan).filter(Scan.id == scan_id).first()
+
+
+async def process_scan(scan_id: int, advisor_id: int, document_base64):
+    print(f"Processing scan {scan_id} for advisor {advisor_id}")
+    with SessionLocal() as db:
+        try:
+            print(f"Scanning document with id {scan_id}")
+            statement_processor = FinancialStatementProcessor()
+            update, extracted_data = await statement_processor.process_scan(
+                document_base64
+            )
+            print(f"Extracted data: {scan_id}")
+
+            new_prospect = create_prospect(
+                db,
+                ProspectCreateSchema(
+                    first_name=extracted_data.investor_first_name,
+                    last_name=extracted_data.investor_last_name,
+                ),
+                advisor_id,
+            )
+            update.prospect_id = new_prospect.id
+            update_scan(db, scan_id, update)
+
+            for account_create in extracted_data.accounts:
+                create_account(db, account_create, new_prospect.id)
+
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            error_update = ScanProcessorUpdateSchema(
+                status=ScanStatus.ERROR, error_message=str(e)
+            )
+            update_scan(db, scan_id, error_update)
+            raise e

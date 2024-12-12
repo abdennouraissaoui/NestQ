@@ -13,8 +13,6 @@ from app.models.database.scan_db import (
     get_scan,
     list_scans,
     delete_scan,
-    update_scan,
-    get_scan_with_relations,
 )
 from app.models.schemas.scan_schema import (
     ScanCreateSchema,
@@ -24,13 +22,13 @@ from app.models.schemas.scan_schema import (
 from app.models.enums import ScanStatus
 from app.models.database.prospect_db import get_prospect
 import base64
-from app.models.database.account_db import create_account
 from app.utils.auth import get_current_user
 from app.utils.db_connection_manager import get_db
-from app.services.statement_extractor import FinancialStatementProcessor
 from app.models.database.orm_models import User
-from app.models.schemas.prospect_schema import ProspectCreateSchema
-from app.models.database.prospect_db import create_prospect
+from fastapi.responses import StreamingResponse
+from app.models.database.scan_db import process_scan
+from fastapi import BackgroundTasks
+from asyncio import sleep
 
 
 router = APIRouter(prefix="/scans", tags=["scans"])
@@ -55,21 +53,55 @@ def check_prospect_ownership(
     return prospect.advisor_id == advisor_id
 
 
+async def get_scan_status_stream(
+    scan_id: int,
+    db: Session,
+    timeout: int = 300,
+    initial_wait: int = 15,
+    interval: int = 3,
+):
+    """
+    Get the status of a scan. Times out after timeout seconds.
+    """
+    await sleep(initial_wait)
+    elapsed = initial_wait
+    scan = get_scan(db, scan_id)
+    while True:
+        db.refresh(scan)
+        if scan.status in [ScanStatus.PROCESSED, ScanStatus.ERROR]:
+            yield f"data: {scan.status.value}\n\n"
+            break
+        await sleep(interval)
+        elapsed += interval
+        if elapsed > timeout:
+            yield f"data: {ScanStatus.ERROR.value}\n\n"
+            break
+
+
+@router.get("/{scan_id}/status")
+async def get_scan_status(
+    scan_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Get the status of a scan.
+    """
+    scan = get_scan(db, scan_id)
+    if scan is None:
+        raise HTTPException(status_code=404, detail="Scan not found")
+
+    return StreamingResponse(
+        get_scan_status_stream(scan_id, db), media_type="text/event-stream"
+    )
+
+
 @router.post("/", response_model=ScanDisplaySchema)
 async def upload_scan(
     file: UploadFile = File(...),
-    # prospect_id: int = Form(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
 ):
-    # Check if the current user owns the prospect
-    # TODO: Uncomment this once we have prospect ownership implemented
-    # if not check_prospect_ownership(db, current_user.advisor.id, prospect_id):
-    #     raise HTTPException(
-    #         status_code=403,
-    #         detail="You don't have permission to upload scans for this prospect",
-    #     )
-
     # Read the file content
     file_content = await file.read()
 
@@ -80,33 +112,14 @@ async def upload_scan(
     scan_create = ScanCreateSchema(
         file_name=file.filename,
         uploaded_file=base64_content,
-        status=ScanStatus.UPLOADED
+        status=ScanStatus.PROCESSING,
     )
 
     db_scan = create_scan(db, scan_create)
 
-    processor_update, scan_extracted_data = FinancialStatementProcessor().process_scan(
-        base64_content
+    background_tasks.add_task(
+        process_scan, db_scan.id, current_user.advisor.id, base64_content
     )
-
-    # Create a new prospect
-    new_prospect = create_prospect(
-        db, ProspectCreateSchema(first_name=scan_extracted_data.investor_first_name,
-                                 last_name=scan_extracted_data.investor_last_name),
-        current_user.advisor.id
-    )
-
-    processor_update.prospect_id = new_prospect.id
-
-    db_scan = update_scan(db, db_scan.id, processor_update)
-
-    # Create accounts
-    for account_create in scan_extracted_data.accounts:
-        create_account(db, account_create, new_prospect.id)
-
-    # Fetch the updated scan with related data
-    db_scan = get_scan_with_relations(db, db_scan.id)
-
     return db_scan
 
 
