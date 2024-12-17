@@ -29,6 +29,7 @@ from app.models.enums import (
 from sqlalchemy.dialects.postgresql import JSONB
 from pgvector.sqlalchemy import Vector
 from sqlalchemy.orm import Session
+from typing import Optional
 
 Base = declarative_base()
 
@@ -316,16 +317,9 @@ class Scan(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=True)
-    uploaded_file = Column(LargeBinary, nullable=False)
-    page_count = Column(Integer, nullable=True)
     file_name = Column(String(255), nullable=False)
-    statement_date = Column(BigInteger, nullable=True)
-    ocr_source = Column(String(50), nullable=True)
-    llm_source = Column(String(50), nullable=True)  # Added field for LLM source
+    blob_name = Column(String(255), nullable=False)
     status = Column(Enum(ScanStatus), nullable=False)
-    ocr_text = Column(Text, nullable=True)
-    ocr_text_cleaned = Column(Text, nullable=True)
-    processing_time = Column(Float, nullable=True)
     created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
@@ -334,6 +328,7 @@ class Scan(Base):
     prospect = relationship("Prospect", back_populates="scans")
     asset_allocations = relationship("AssetAllocation", back_populates="scan")
     performances = relationship("Performance", back_populates="scan")
+    ocr_result = relationship("OcrResult", back_populates="scan", uselist=False)
     accounts = relationship(
         "Account",
         secondary="prospects",
@@ -345,6 +340,14 @@ class Scan(Base):
         Index("ix_scans_prospect_id", "prospect_id"),
         Index("ix_scans_status", "status"),
     )
+
+    @property
+    def statement_date(self) -> Optional[int]:
+        return self.ocr_result.statement_date if self.ocr_result else None
+
+    @statement_date.setter
+    def statement_date(self, value: Optional[int]):
+        self._statement_date = value
 
     def __repr__(self):
         return f"""<Scan(id={self.id}, prospect_id={self.prospect_id}, status={self.status})>"""
@@ -427,6 +430,32 @@ class WebhookEvent(Base):
     def __repr__(self):
         return f"""<WebhookEvent(id={self.id}, stripe_event_id={self.stripe_event_id},
     event_type={self.event_type}, processed={self.processed})>"""
+
+
+class OcrResult(Base):
+    __tablename__ = "ocr_results"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    scan_id = Column(Integer, ForeignKey("scans.id"), nullable=False, unique=True)
+    ocr_source = Column(String(50), nullable=True)
+    llm_source = Column(String(50), nullable=True)
+    error_message = Column(String(255), nullable=True)
+    ocr_text = Column(Text, nullable=True)
+    ocr_text_cleaned = Column(Text, nullable=True)
+    processing_time = Column(Float, nullable=True)
+    page_count = Column(Integer, nullable=True)
+    statement_date = Column(BigInteger, nullable=True)
+    created_at = Column(BigInteger, default=utc_timestamp, nullable=False)
+    updated_at = Column(
+        BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
+    )
+
+    scan = relationship("Scan", back_populates="ocr_result")
+
+    __table_args__ = (Index("ix_ocr_results_scan_id", "scan_id"),)
+
+    def __repr__(self):
+        return f"<OcrResult(id={self.id}, scan_id={self.scan_id})>"
 
 
 # Create tables in the database

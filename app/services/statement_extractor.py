@@ -50,18 +50,16 @@ class FinancialStatementProcessor:
             await self.extract_financial_statement(context)
         )
 
-        scan_update = ScanProcessorUpdateSchema(
-            statement_date=extracted_data.statement_date,
-            ocr_text=markdown_text,
-            ocr_text_cleaned=context,
-            processing_time=float(time.time() - start_time),
-            status=ScanStatus.PROCESSED,
-            page_count=len(ocr_result.pages),
-            ocr_source=self.ocr_factory.provider,
-            llm_source=self.llm_factory.provider,
-        )
-
-        return scan_update, extracted_data
+        return {
+            "ocr_text": markdown_text,
+            "ocr_text_cleaned": context,
+            "processing_time": float(time.time() - start_time),
+            "status": ScanStatus.PROCESSED,
+            "page_count": len(ocr_result.pages),
+            "ocr_source": self.ocr_factory.provider,
+            "llm_source": self.llm_factory.provider,
+            "extracted_data": extracted_data,
+        }
 
     async def extract_financial_statement(
         self, context: str, model="gpt-4o"

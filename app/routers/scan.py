@@ -13,6 +13,8 @@ from app.models.database.scan_db import (
     get_scan,
     list_scans,
     delete_scan,
+    process_file,
+    get_scan_with_ocr_result,
 )
 from app.models.schemas.scan_schema import (
     ScanCreateSchema,
@@ -26,9 +28,10 @@ from app.utils.auth import get_current_user
 from app.utils.db_connection_manager import get_db
 from app.models.database.orm_models import User
 from fastapi.responses import StreamingResponse
-from app.models.database.scan_db import process_scan
 from fastapi import BackgroundTasks
 from asyncio import sleep
+from app.services.storage import upload_statement_file
+from app.models.schemas.scan_schema import FileUploadSchema
 
 
 router = APIRouter(prefix="/scans", tags=["scans"])
@@ -95,7 +98,7 @@ async def get_scan_status(
     )
 
 
-@router.post("/", response_model=ScanDisplaySchema)
+@router.post("/", response_model=FileUploadSchema)
 async def upload_scan(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -104,21 +107,23 @@ async def upload_scan(
 ):
     # Read the file content
     file_content = await file.read()
+    blob_name = await upload_statement_file(file_content, file.filename)
 
     # Convert file content to base64
     base64_content = base64.b64encode(file_content).decode("utf-8")
 
     # Create initial scan entry
     scan_create = ScanCreateSchema(
-        file_name=file.filename,
+        blob_name=blob_name,
         uploaded_file=base64_content,
         status=ScanStatus.PROCESSING,
+        file_name=file.filename,
     )
 
     db_scan = create_scan(db, scan_create)
 
     background_tasks.add_task(
-        process_scan, db_scan.id, current_user.advisor.id, base64_content
+        process_file, db_scan.id, current_user.advisor.id, base64_content
     )
     return db_scan
 
@@ -129,7 +134,7 @@ def read_scan(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    db_scan = get_scan(db, scan_id)
+    db_scan = get_scan_with_ocr_result(db, scan_id)
     if db_scan is None:
         raise HTTPException(status_code=404, detail="Scan not found")
 
