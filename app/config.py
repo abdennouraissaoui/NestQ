@@ -71,6 +71,13 @@ class Config:
         "FRONTEND_FRONTEND_URL"
     )
 
+    AZURE_STORAGE_ACCOUNT_NAME = os.getenv(
+        "AZURE_STORAGE_ACCOUNT_NAME"
+    ) or local_config.get("AZURE-STORAGE_ACCOUNT_NAME")
+    AZURE_STORAGE_ACCOUNT_KEY = os.getenv(
+        "AZURE_STORAGE_ACCOUNT_KEY"
+    ) or local_config.get("AZURE-STORAGE_ACCOUNT_KEY")
+
 
 app_config = Config()
 
