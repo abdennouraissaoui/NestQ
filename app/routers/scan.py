@@ -32,6 +32,7 @@ from fastapi import BackgroundTasks
 from asyncio import sleep
 from app.services.storage import upload_statement_file
 from app.models.schemas.scan_schema import FileUploadSchema
+import asyncio
 
 
 router = APIRouter(prefix="/scans", tags=["scans"])
@@ -54,6 +55,21 @@ def check_prospect_ownership(
         return False
 
     return prospect.advisor_id == advisor_id
+
+
+def check_scan_ownership(db: Session, advisor_id: int, scan_id: int) -> bool:
+    """
+    Check if the given advisor owns the specified scan.
+
+    :param db: Database session
+    :param advisor_id: ID of the advisor
+    :param scan_id: ID of the scan
+    :return: True if the advisor owns the scan, False otherwise
+    """
+    scan = get_scan(db, scan_id)
+    if scan is None:
+        return False
+    return scan.prospect.advisor_id == advisor_id
 
 
 async def get_scan_status_stream(
@@ -98,8 +114,9 @@ async def get_scan_status(
     )
 
 
-@router.post("/", response_model=FileUploadSchema)
+@router.post("/{prospect_id}", response_model=FileUploadSchema)
 async def upload_scan(
+    prospect_id: int,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -107,7 +124,9 @@ async def upload_scan(
 ):
     # Read the file content
     file_content = await file.read()
+    print("received file")
     blob_name = await upload_statement_file(file_content, file.filename)
+    print("uploaded file")
 
     # Convert file content to base64
     base64_content = base64.b64encode(file_content).decode("utf-8")
@@ -118,13 +137,19 @@ async def upload_scan(
         uploaded_file=base64_content,
         status=ScanStatus.PROCESSING,
         file_name=file.filename,
+        prospect_id=prospect_id,
     )
+    print("created scan")
 
     db_scan = create_scan(db, scan_create)
+    print("created scan in db")
 
-    background_tasks.add_task(
-        process_file, db_scan.id, current_user.advisor.id, base64_content
-    )
+    asyncio.create_task(process_file(db_scan.id, base64_content))
+
+    # background_tasks.add_task(
+    #     process_file, db_scan.id, base64_content
+    # )
+    print("added task to process file")
     return db_scan
 
 
@@ -138,10 +163,8 @@ def read_scan(
     if db_scan is None:
         raise HTTPException(status_code=404, detail="Scan not found")
 
-    # Check if the current user owns the prospect associated with this scan
-    if not check_prospect_ownership(
-        db, current_user.advisor.id, db_scan.prospect_id
-    ):
+    # Check if the current user owns the scan
+    if not check_scan_ownership(db, current_user.advisor.id, scan_id):
         raise HTTPException(
             status_code=403, detail="You don't have permission to access this scan"
         )
@@ -173,10 +196,8 @@ def delete_scan_route(
     if db_scan is None:
         raise HTTPException(status_code=404, detail="Scan not found")
 
-    # Check if the current user owns the prospect associated with this scan
-    if not check_prospect_ownership(
-        db, current_user.advisor.id, db_scan.prospect_id
-    ):
+    # Check if the current user owns the scan
+    if not check_scan_ownership(db, current_user.advisor.id, scan_id):
         raise HTTPException(
             status_code=403, detail="You don't have permission to delete this scan"
         )

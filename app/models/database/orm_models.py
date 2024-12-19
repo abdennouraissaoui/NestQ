@@ -147,9 +147,7 @@ class Prospect(Base):
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
-
     advisor = relationship("Advisor", back_populates="prospects")
-    accounts = relationship("Account", back_populates="prospect")
     addresses = relationship("Address", back_populates="prospect")
     scans = relationship("Scan", back_populates="prospect")
     __table_args__ = (Index("ix_prospects_advisor_id", "advisor_id"),)
@@ -245,7 +243,7 @@ class Account(Base):
     __tablename__ = "accounts"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    prospect_id = Column(Integer, ForeignKey("prospects.id"), nullable=False)
+    scan_id = Column(Integer, ForeignKey("scans.id"), nullable=True)
     account_id = Column(String(50), nullable=False)
     account_type = Column(Enum(AccountType), nullable=False)
     currency = Column(String(3), nullable=False)
@@ -256,16 +254,16 @@ class Account(Base):
     updated_at = Column(
         BigInteger, default=utc_timestamp, onupdate=utc_timestamp, nullable=False
     )
-    prospect = relationship("Prospect", back_populates="accounts")
     holdings = relationship("Holding", back_populates="account")
+    scan = relationship("Scan", back_populates="accounts")
     __table_args__ = (
-        Index("ix_accounts_prospect_id", "prospect_id"),
         Index("ix_accounts_account_id", "account_id"),
+        Index("ix_accounts_scan_id", "scan_id"),
     )
 
     def __repr__(self):
-        return f"""<Account(id={self.id}, prospect_id={self.prospect_id},
-    account_id={self.account_id}, account_type={self.account_type}, institution={self.institution})>"""
+        return f"""<Account(id={self.id}, account_id={self.account_id}, 
+    account_type={self.account_type}, institution={self.institution})>"""
 
 
 class AssetAllocation(Base):
@@ -328,14 +326,13 @@ class Scan(Base):
     prospect = relationship("Prospect", back_populates="scans")
     asset_allocations = relationship("AssetAllocation", back_populates="scan")
     performances = relationship("Performance", back_populates="scan")
-    ocr_result = relationship("OcrResult", back_populates="scan", uselist=False)
-    accounts = relationship(
-        "Account",
-        secondary="prospects",
-        viewonly=True,
-        primaryjoin="Scan.prospect_id == Prospect.id",
-        secondaryjoin="Prospect.id == Account.prospect_id",
+    ocr_result = relationship(
+        "OcrResult",
+        back_populates="scan",
+        uselist=False,
+        cascade="all, delete-orphan",
     )
+    accounts = relationship("Account", back_populates="scan")
     __table_args__ = (
         Index("ix_scans_prospect_id", "prospect_id"),
         Index("ix_scans_status", "status"),

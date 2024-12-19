@@ -7,8 +7,6 @@ from app.models.schemas.scan_schema import (
 )
 from app.utils.db_connection_manager import SessionLocal
 from app.services.statement_extractor import FinancialStatementProcessor
-from app.models.schemas.prospect_schema import ProspectCreateSchema
-from app.models.database.prospect_db import create_prospect
 from app.models.database.account_db import create_account
 from app.models.database.orm_models import OcrResult
 from sqlalchemy import select
@@ -72,9 +70,10 @@ def list_scans(db: Session, advisor_id: int, skip: int = 0, limit: int = 100):
     stmt = (
         select(Scan)
         .outerjoin(Scan.ocr_result)
+        .outerjoin(Scan.accounts)
         .join(Scan.prospect)
         .join(Prospect.advisor)
-        .options(contains_eager(Scan.ocr_result))
+        .options(contains_eager(Scan.ocr_result), contains_eager(Scan.accounts))
         .filter(Advisor.id == advisor_id)
         .offset(skip)
         .limit(limit)
@@ -97,7 +96,12 @@ def get_scans_by_prospect_id(db: Session, advisor_id: int, prospect_id: int):
 
 
 def get_scan_with_relations(db: Session, scan_id: int) -> Scan:
-    return db.query(Scan).filter(Scan.id == scan_id).first()
+    return (
+        db.query(Scan)
+        .filter(Scan.id == scan_id)
+        .options(contains_eager(Scan.ocr_result), contains_eager(Scan.accounts))
+        .first()
+    )
 
 
 def create_ocr_result(
@@ -110,29 +114,16 @@ def create_ocr_result(
     return db_ocr_result
 
 
-async def process_file(scan_id: int, advisor_id: int, document_base64):
-    print(f"Processing file {scan_id} for advisor {advisor_id}")
+async def process_file(scan_id: int, document_base64):
+    print(f"Processing file {scan_id}")
     with SessionLocal() as db:
         print(f"Scanning document with id {scan_id}")
         statement_processor = FinancialStatementProcessor()
         results = await statement_processor.process_scan(document_base64)
         print(f"Extracted data: {scan_id}")
-
-        new_prospect = create_prospect(
-            db,
-            ProspectCreateSchema(
-                first_name=results["extracted_data"].investor_first_name,
-                last_name=results["extracted_data"].investor_last_name,
-            ),
-            advisor_id,
-        )
-
         # Create scan update with status from results
-        update = ScanProcessorUpdateSchema(
-            status=results["status"],
-            prospect_id=new_prospect.id,
-        )
-        scan = update_scan(db, scan_id, update)
+        update = ScanProcessorUpdateSchema(status=results["status"])
+        update_scan(db, scan_id, update)
 
         # Create OCR result with all available data
         ocr_result_create = OcrResultSchema(
@@ -145,8 +136,8 @@ async def process_file(scan_id: int, advisor_id: int, document_base64):
             ocr_text_cleaned=results["ocr_text_cleaned"],
             processing_time=results["processing_time"],
         )
-        ocr_result: OcrResult = create_ocr_result(db, ocr_result_create)
+        create_ocr_result(db, ocr_result_create)
         for account_create in results["extracted_data"].accounts:
-            create_account(db, account_create, new_prospect.id)
+            create_account(db, account_create, scan_id)
 
         db.commit()

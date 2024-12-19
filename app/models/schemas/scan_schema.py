@@ -14,47 +14,16 @@ class FileUploadSchema(BaseModel):
     status: ScanStatus = Field(
         description="Current status of the scan", example="completed"
     )
-    created_at: int = Field(
-        description="Timestamp when the scan was created",
-        example=1672537600,
-    )
-    updated_at: int = Field(
-        description="Timestamp when the scan was last updated",
-        example=1672540800,
-    )
-
-
-class ScanDisplaySchema(BaseModel):
-    id: int = Field(description="ID of the scan", example=1)
-    prospect_id: Optional[int] = Field(
-        default=None,
-        description="ID of the prospect associated with the scan",
-        example=1,
-    )
-    file_name: str = Field(description="Name of the file", example="scan.pdf")
-    status: ScanStatus = Field(
-        description="Current status of the scan", example="completed"
-    )
-    created_at: int = Field(
-        description="Timestamp when the scan was created",
-        example=1672537600,
-    )
-    updated_at: int = Field(
-        description="Timestamp when the scan was last updated",
-        example=1672540800,
-    )
-
-    accounts: List[AccountDisplaySchema] = Field(
-        default_factory=list,
-        description="List of accounts associated with the scan",
-        exclude=True,
-    )
 
     prospect: Optional[ProspectDisplaySchema] = Field(
         default=None, description="Prospect associated with the scan", exclude=True
     )
 
-    statement_date: Optional[int] = None
+    prospect_id: Optional[int] = Field(
+        default=None,
+        description="ID of the prospect associated with the scan",
+        example=1,
+    )
 
     @computed_field
     def investor_first_name(self) -> Optional[str]:
@@ -64,17 +33,46 @@ class ScanDisplaySchema(BaseModel):
     def investor_last_name(self) -> Optional[str]:
         return self.prospect.last_name if self.prospect else None
 
+    created_at: int = Field(
+        description="Timestamp when the scan was created",
+        example=1672537600,
+    )
+    updated_at: int = Field(
+        description="Timestamp when the scan was last updated",
+        example=1672540800,
+    )
+
+    class Config:
+        from_attributes = True
+
+
+class ScanDisplaySchema(FileUploadSchema):
+    accounts: List[AccountDisplaySchema] = Field(
+        default_factory=list,
+        description="List of accounts associated with the scan",
+    )
+
+    statement_date: Optional[int] = Field(
+        default=None,
+        description="Date of the statement in format YYYYMMDD",
+        example=20240830,
+    )
+
     @computed_field
     def amount(self) -> float:
+        """Total value of all accounts in the scan"""
         return sum(account.account_value or 0 for account in self.accounts)
 
     @computed_field
     def institution(self) -> str:
+        """Comma-separated list of unique institutions in the scan"""
         return ", ".join(
-            set(
-                account.institution
-                for account in self.accounts
-                if account.institution
+            sorted(
+                set(
+                    account.institution
+                    for account in self.accounts
+                    if account.institution
+                )
             )
         )
 
@@ -84,7 +82,7 @@ class ScanDisplaySchema(BaseModel):
 
 class ScanDisplayDetailSchema(ScanDisplaySchema):
     accounts: List[AccountDetailDisplaySchema] = Field(
-        description="List of accounts associated with the scan"
+        description="Detailed list of accounts associated with the scan"
     )
 
     class Config:
@@ -117,6 +115,9 @@ class OcrResultSchema(BaseModel):
         example=20240830,
     )
 
+    class Config:
+        from_attributes = True
+
 
 class ScanProcessorUpdateSchema(BaseModel):
     prospect_id: Optional[int] = Field(
@@ -128,8 +129,12 @@ class ScanProcessorUpdateSchema(BaseModel):
         example="processing",
     )
 
+    class Config:
+        from_attributes = True
+
 
 class ScanCreateSchema(BaseModel):
+    prospect_id: int = Field(description="ID of the prospect", example=1)
     file_name: str = Field(
         description="Name of the uploaded file", example="statement.pdf"
     )
@@ -140,3 +145,6 @@ class ScanCreateSchema(BaseModel):
     status: ScanStatus = Field(
         description="Current status of the scan", example="processing"
     )
+
+    class Config:
+        from_attributes = True
