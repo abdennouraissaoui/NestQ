@@ -166,3 +166,5 @@ nestq.ini
 *.code-workspace
 
 *.db
+
+static/
