@@ -5,8 +5,8 @@ from app.config import app_config
 
 engine = create_engine(
     app_config.SQLALCHEMY_DATABASE_URI,
-    pool_size=1,
-    max_overflow=5,
+    pool_size=10,
+    max_overflow=20,
 )
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
